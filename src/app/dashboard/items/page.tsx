@@ -29,6 +29,8 @@ interface Customer {
   email: string;
 }
 
+const USD_LKR_RATE = 319.36;
+
 export default function ItemsPage() {
   const [items, setItems] = useState<Item[]>([]);
   const [search, setSearch] = useState("");
@@ -200,7 +202,11 @@ export default function ItemsPage() {
                     step="0.01"
                     required
                     value={formData.unitPriceUsd}
-                    onChange={(e) => setFormData({ ...formData, unitPriceUsd: e.target.value })}
+                    onChange={(e) => {
+                      const usd = e.target.value;
+                      const lkr = usd ? (Number(usd) * USD_LKR_RATE).toFixed(2) : "";
+                      setFormData({ ...formData, unitPriceUsd: usd, unitPriceLkr: lkr });
+                    }}
                     className="bg-white/5 border-zinc-800 focus:ring-amber-500/50"
                   />
                 </div>
@@ -212,7 +218,11 @@ export default function ItemsPage() {
                     step="0.01"
                     required
                     value={formData.unitPriceLkr}
-                    onChange={(e) => setFormData({ ...formData, unitPriceLkr: e.target.value })}
+                    onChange={(e) => {
+                      const lkr = e.target.value;
+                      const usd = lkr ? (Number(lkr) / USD_LKR_RATE).toFixed(2) : "";
+                      setFormData({ ...formData, unitPriceLkr: lkr, unitPriceUsd: usd });
+                    }}
                     className="bg-white/5 border-zinc-800 focus:ring-amber-500/50"
                   />
                 </div>

@@ -38,6 +38,8 @@ interface LineItem {
   discountAmountLkr: number;
 }
 
+const USD_LKR_RATE = 319.36;
+
 export default function NewQuotationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -155,6 +157,13 @@ export default function NewQuotationPage() {
       
       const updated = { ...li, [field]: value };
       
+      if (field === 'unitPriceUsd') {
+        updated.unitPriceLkr = Number(value) * USD_LKR_RATE;
+      }
+      if (field === 'unitPriceLkr') {
+        updated.unitPriceUsd = Number(value) / USD_LKR_RATE;
+      }
+      
       if (field === 'discountPct') {
         const pct = Number(value) || 0;
         updated.discountAmountUsd = (updated.unitPriceUsd * pct) / 100;
@@ -166,6 +175,14 @@ export default function NewQuotationPage() {
         if (updated.unitPriceUsd > 0) {
           updated.discountPct = (amt / updated.unitPriceUsd) * 100;
           updated.discountAmountLkr = (updated.unitPriceLkr * updated.discountPct) / 100;
+        }
+      }
+
+      if (field === 'discountAmountLkr') {
+        const amt = Number(value) || 0;
+        if (updated.unitPriceLkr > 0) {
+          updated.discountPct = (amt / updated.unitPriceLkr) * 100;
+          updated.discountAmountUsd = (updated.unitPriceUsd * updated.discountPct) / 100;
         }
       }
 
@@ -403,11 +420,30 @@ export default function NewQuotationPage() {
                           />
                         </div>
                         <div className="col-span-6 md:col-span-3">
+                          <Label className="text-xs text-zinc-400">Base Price (LKR)</Label>
+                          <Input 
+                            type="number"
+                            value={li.unitPriceLkr} 
+                            onChange={(e) => updateLineItem(li.id, 'unitPriceLkr', e.target.value)}
+                            className="bg-black/50 border-zinc-700 mt-1 text-emerald-400 font-medium disabled:text-emerald-400/60 disabled:bg-black/80"
+                            disabled={!!li.itemId}
+                          />
+                        </div>
+                        <div className="col-span-6 md:col-span-3">
                           <Label className="text-xs text-zinc-400">Discount (USD)</Label>
                           <Input 
                             type="number"
                             value={li.discountAmountUsd} 
                             onChange={(e) => updateLineItem(li.id, 'discountAmountUsd', e.target.value)}
+                            className="bg-black/50 border-zinc-700 mt-1 text-red-400 font-medium"
+                          />
+                        </div>
+                        <div className="col-span-6 md:col-span-3">
+                          <Label className="text-xs text-zinc-400">Discount (LKR)</Label>
+                          <Input 
+                            type="number"
+                            value={li.discountAmountLkr} 
+                            onChange={(e) => updateLineItem(li.id, 'discountAmountLkr', e.target.value)}
                             className="bg-black/50 border-zinc-700 mt-1 text-red-400 font-medium"
                           />
                         </div>
