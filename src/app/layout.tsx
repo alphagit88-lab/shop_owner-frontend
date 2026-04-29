@@ -6,7 +6,7 @@ import { AuthProvider } from "@/lib/auth-context";
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
 export const metadata: Metadata = {
-  title: "Gem Palace — Admin Dashboard",
+  title: "Invoice Dashboard — Admin",
   description: "Jewelry shop admin panel for quotations, receipts and inventory",
 };
 

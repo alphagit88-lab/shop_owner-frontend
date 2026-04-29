@@ -45,7 +45,7 @@ export default function LoginPage() {
               <Diamond className="w-8 h-8 text-black" />
             </div>
           </div>
-          <CardTitle className="text-3xl font-bold tracking-tight text-white">Gem Palace</CardTitle>
+          <CardTitle className="text-3xl font-bold tracking-tight text-white">Invoice Dashboard</CardTitle>
           <CardDescription className="text-zinc-400">
             Admin Dashboard — Secure Access
           </CardDescription>

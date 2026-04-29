@@ -34,8 +34,6 @@ interface LineItem {
   unitPriceUsd: number;
   unitPriceLkr: number;
   discountPct: number;
-  discountAmountUsd: number;
-  discountAmountLkr: number;
 }
 
 const USD_LKR_RATE = 319.36;
@@ -53,6 +51,7 @@ export default function NewQuotationPage() {
 
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>("");
   const [notes, setNotes] = useState("");
+  const [quotationStatus, setQuotationStatus] = useState<string | null>(null);
   const [lineItems, setLineItems] = useState<LineItem[]>([]);
 
   useEffect(() => {
@@ -84,6 +83,7 @@ export default function NewQuotationPage() {
         if (editQuotationNo) {
           const quoteRes = await api.get(`/quotations/${editQuotationNo}`);
           const quote = quoteRes.data;
+          setQuotationStatus(quote.status);
           setSelectedCustomerId(quote.customerId?.toString() || "");
           setNotes(quote.notes || "");
           setLineItems(
@@ -96,8 +96,6 @@ export default function NewQuotationPage() {
               unitPriceUsd: Number(d.unitPriceUsd),
               unitPriceLkr: Number(d.unitPriceLkr),
               discountPct: Number(d.discountPct),
-              discountAmountUsd: Number(d.discountAmountUsd),
-              discountAmountLkr: Number(d.discountAmountLkr),
             }))
           );
         }
@@ -125,8 +123,6 @@ export default function NewQuotationPage() {
           unitPriceUsd: item.unitPriceUsd,
           unitPriceLkr: item.unitPriceLkr,
           discountPct: 0,
-          discountAmountUsd: 0,
-          discountAmountLkr: 0,
         }
       ]);
     } else {
@@ -140,8 +136,6 @@ export default function NewQuotationPage() {
           unitPriceUsd: 0,
           unitPriceLkr: 0,
           discountPct: 0,
-          discountAmountUsd: 0,
-          discountAmountLkr: 0,
         }
       ]);
     }
@@ -165,25 +159,7 @@ export default function NewQuotationPage() {
       }
       
       if (field === 'discountPct') {
-        const pct = Number(value) || 0;
-        updated.discountAmountUsd = (updated.unitPriceUsd * pct) / 100;
-        updated.discountAmountLkr = (updated.unitPriceLkr * pct) / 100;
-      }
-
-      if (field === 'discountAmountUsd') {
-        const amt = Number(value) || 0;
-        if (updated.unitPriceUsd > 0) {
-          updated.discountPct = (amt / updated.unitPriceUsd) * 100;
-          updated.discountAmountLkr = (updated.unitPriceLkr * updated.discountPct) / 100;
-        }
-      }
-
-      if (field === 'discountAmountLkr') {
-        const amt = Number(value) || 0;
-        if (updated.unitPriceLkr > 0) {
-          updated.discountPct = (amt / updated.unitPriceLkr) * 100;
-          updated.discountAmountUsd = (updated.unitPriceUsd * updated.discountPct) / 100;
-        }
+        updated.discountPct = Number(value) || 0;
       }
 
       return updated;
@@ -194,8 +170,16 @@ export default function NewQuotationPage() {
     let usd = 0;
     let lkr = 0;
     lineItems.forEach(li => {
-      usd += (Number(li.unitPriceUsd) - Number(li.discountAmountUsd)) * Number(li.quantity);
-      lkr += (Number(li.unitPriceLkr) - Number(li.discountAmountLkr)) * Number(li.quantity);
+      const unitUsd = Number(li.unitPriceUsd) || 0;
+      const unitLkr = Number(li.unitPriceLkr) || 0;
+      const pct = Number(li.discountPct) || 0;
+      const qty = Number(li.quantity) || 0;
+
+      const discUsd = (unitUsd * pct) / 100;
+      const discLkr = (unitLkr * pct) / 100;
+
+      usd += (unitUsd - discUsd) * qty;
+      lkr += (unitLkr - discLkr) * qty;
     });
     return { usd, lkr };
   }, [lineItems]);
@@ -222,8 +206,6 @@ export default function NewQuotationPage() {
         unitPriceLkr: Number(li.unitPriceLkr),
         quantity: Number(li.quantity),
         discountPct: Number(li.discountPct),
-        discountAmountUsd: Number(li.discountAmountUsd),
-        discountAmountLkr: Number(li.discountAmountLkr),
       }))
     };
 
@@ -429,31 +411,22 @@ export default function NewQuotationPage() {
                             disabled={!!li.itemId}
                           />
                         </div>
-                        <div className="col-span-6 md:col-span-3">
-                          <Label className="text-xs text-zinc-400">Discount (USD)</Label>
+                        <div className="col-span-6 md:col-span-2">
+                          <Label className="text-xs text-zinc-400">Discount (%)</Label>
                           <Input 
                             type="number"
-                            value={li.discountAmountUsd} 
-                            onChange={(e) => updateLineItem(li.id, 'discountAmountUsd', e.target.value)}
-                            className="bg-black/50 border-zinc-700 mt-1 text-red-400 font-medium"
+                            value={li.discountPct} 
+                            onChange={(e) => updateLineItem(li.id, 'discountPct', e.target.value)}
+                            className="bg-black/50 border-zinc-700 mt-1 text-red-400 font-bold"
                           />
                         </div>
-                        <div className="col-span-6 md:col-span-3">
-                          <Label className="text-xs text-zinc-400">Discount (LKR)</Label>
-                          <Input 
-                            type="number"
-                            value={li.discountAmountLkr} 
-                            onChange={(e) => updateLineItem(li.id, 'discountAmountLkr', e.target.value)}
-                            className="bg-black/50 border-zinc-700 mt-1 text-red-400 font-medium"
-                          />
-                        </div>
-                        <div className="col-span-12 md:col-span-6 text-right">
+                        <div className="col-span-12 md:col-span-4 text-right">
                           <div className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Line Total</div>
                           <div className="text-2xl font-bold text-white">
-                            ${((Number(li.unitPriceUsd) - Number(li.discountAmountUsd)) * Number(li.quantity)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            ${((Number(li.unitPriceUsd) - (Number(li.unitPriceUsd) * (Number(li.discountPct) || 0) / 100)) * Number(li.quantity)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </div>
                           <div className="text-sm text-amber-500">
-                            Rs. {((Number(li.unitPriceLkr) - Number(li.discountAmountLkr)) * Number(li.quantity)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            Rs. {((Number(li.unitPriceLkr) - (Number(li.unitPriceLkr) * (Number(li.discountPct) || 0) / 100)) * Number(li.quantity)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </div>
                         </div>
                       </div>

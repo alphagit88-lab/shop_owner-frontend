@@ -61,7 +61,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="p-2 rounded-xl bg-amber-500 shadow-lg shadow-amber-500/20">
             <Diamond className="w-6 h-6 text-black" />
           </div>
-          {isSidebarOpen && <span className="font-bold text-xl tracking-tight text-white">Gem Palace</span>}
+          {isSidebarOpen && <span className="font-bold text-xl tracking-tight text-white">Invoice Dashboard</span>}
         </div>
 
         <nav className="flex-1 px-4 space-y-2 mt-4">
