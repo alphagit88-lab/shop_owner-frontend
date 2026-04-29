@@ -160,17 +160,20 @@ export default function QuotationDetailPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {quotation.details?.map((item: any) => (
-                  <TableRow key={item.id} className="border-zinc-800/50 print:border-gray-200">
-                    <TableCell className="font-medium text-white print:text-black">{item.itemCode || "-"}</TableCell>
-                    <TableCell className="text-zinc-300 print:text-gray-800">{item.itemDescription}</TableCell>
-                    <TableCell className="text-right text-zinc-300 print:text-gray-800">{item.quantity}</TableCell>
-                    <TableCell className="text-right text-zinc-400 print:text-gray-600">${Number(item.unitPriceUsd).toLocaleString()}</TableCell>
-                    <TableCell className="text-right text-red-400 print:text-red-600">-${Number(item.discountAmountUsd).toLocaleString()}</TableCell>
-                    <TableCell className="text-right text-emerald-400 print:text-emerald-700 font-medium">${Number(item.lineTotalUsd).toLocaleString()}</TableCell>
-                    <TableCell className="text-right text-amber-400 print:text-orange-700 font-medium">Rs.{Number(item.lineTotalLkr).toLocaleString()}</TableCell>
-                  </TableRow>
-                ))}
+                {quotation.details?.map((item: any) => {
+                  const discUsd = (Number(item.unitPriceUsd) * Number(item.discountPct)) / 100;
+                  return (
+                    <TableRow key={item.id} className="border-zinc-800/50 print:border-gray-200">
+                      <TableCell className="font-medium text-white print:text-black">{item.itemCode || "-"}</TableCell>
+                      <TableCell className="text-zinc-300 print:text-gray-800">{item.itemDescription}</TableCell>
+                      <TableCell className="text-right text-zinc-300 print:text-gray-800">{item.quantity}</TableCell>
+                      <TableCell className="text-right text-zinc-400 print:text-gray-600">${Number(item.unitPriceUsd).toLocaleString()}</TableCell>
+                      <TableCell className="text-right text-red-400 print:text-red-600">-{item.discountPct}%</TableCell>
+                      <TableCell className="text-right text-emerald-400 print:text-emerald-700 font-medium">${Number(item.lineTotalUsd).toLocaleString()}</TableCell>
+                      <TableCell className="text-right text-amber-400 print:text-orange-700 font-medium">Rs.{Number(item.lineTotalLkr).toLocaleString()}</TableCell>
+                    </TableRow>
+                  );
+                })}
                 <TableRow className="border-t-2 border-zinc-700 print:border-gray-400 bg-zinc-900/30 print:bg-gray-50">
                   <TableCell colSpan={5} className="text-right font-bold text-white print:text-black">GRAND TOTAL:</TableCell>
                   <TableCell className="text-right font-bold text-emerald-400 print:text-emerald-700 text-lg">${Number(quotation.totalUsd).toLocaleString()}</TableCell>

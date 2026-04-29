@@ -56,12 +56,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         ${isSidebarOpen ? "w-64" : "w-20"} 
         transition-all duration-300 ease-in-out
         border-r border-zinc-800/50 bg-[#0a0a0a] flex flex-col fixed h-full z-50
+        print:hidden
       `}>
         <div className="p-6 flex items-center gap-3">
           <div className="p-2 rounded-xl bg-amber-500 shadow-lg shadow-amber-500/20">
             <Diamond className="w-6 h-6 text-black" />
           </div>
-          {isSidebarOpen && <span className="font-bold text-xl tracking-tight text-white">Invoice Dashboard</span>}
+          {isSidebarOpen && <span className="font-bold text-xl tracking-tight text-white">Gem Palace</span>}
         </div>
 
         <nav className="flex-1 px-4 space-y-2 mt-4">
@@ -97,9 +98,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* Main Content */}
-      <main className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300`}>
+      <main className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300 print:ml-0`}>
         {/* Top Header */}
-        <header className="h-16 border-b border-zinc-800/50 bg-[#0a0a0a]/50 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-40">
+        <header className="h-16 border-b border-zinc-800/50 bg-[#0a0a0a]/50 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-40 print:hidden">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!isSidebarOpen)} className="text-zinc-400 hover:text-white hover:bg-white/5">
               {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

@@ -121,6 +121,7 @@ export default function ReceiptDetailPage() {
                   <TableHead className="text-zinc-400 print:text-gray-600">Code</TableHead>
                   <TableHead className="text-zinc-400 print:text-gray-600">Description</TableHead>
                   <TableHead className="text-zinc-400 print:text-gray-600 text-right">Qty</TableHead>
+                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Disc (%)</TableHead>
                   <TableHead className="text-zinc-400 print:text-gray-600 text-right">Total (USD)</TableHead>
                   <TableHead className="text-zinc-400 print:text-gray-600 text-right">Total (LKR)</TableHead>
                 </TableRow>
@@ -131,12 +132,13 @@ export default function ReceiptDetailPage() {
                     <TableCell className="font-medium text-white print:text-black">{item.itemCode || "-"}</TableCell>
                     <TableCell className="text-zinc-300 print:text-gray-800">{item.itemDescription}</TableCell>
                     <TableCell className="text-right text-zinc-300 print:text-gray-800">{item.quantity}</TableCell>
+                    <TableCell className="text-right text-zinc-400 print:text-gray-500">{item.discountPct}%</TableCell>
                     <TableCell className="text-right text-emerald-400 print:text-emerald-700 font-medium">${Number(item.lineTotalUsd).toLocaleString()}</TableCell>
                     <TableCell className="text-right text-amber-400 print:text-orange-700 font-medium">Rs.{Number(item.lineTotalLkr).toLocaleString()}</TableCell>
                   </TableRow>
                 ))}
                 <TableRow className="border-t-2 border-zinc-700 print:border-gray-400 bg-zinc-900/30 print:bg-gray-50">
-                  <TableCell colSpan={3} className="text-right font-bold text-white print:text-black">TOTAL PAID:</TableCell>
+                  <TableCell colSpan={4} className="text-right font-bold text-white print:text-black">TOTAL PAID:</TableCell>
                   <TableCell className="text-right font-bold text-emerald-400 print:text-emerald-700 text-lg">${Number(receipt.totalPaidUsd).toLocaleString()}</TableCell>
                   <TableCell className="text-right font-bold text-amber-500 print:text-orange-700 text-lg">Rs.{Number(receipt.totalPaidLkr).toLocaleString()}</TableCell>
                 </TableRow>
