@@ -57,7 +57,7 @@ export default function SettingsPage() {
             <div className="space-y-2">
               <Label htmlFor="currency" className="text-zinc-300">System Currency</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Select value={currency} onValueChange={setCurrency}>
+                <Select value={currency} onValueChange={(val) => setCurrency(val || "")}>
                   <SelectTrigger className="bg-black/40 border-zinc-800 text-white">
                     <SelectValue placeholder="Select currency..." />
                   </SelectTrigger>
