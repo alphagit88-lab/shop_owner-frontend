@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Plus, Eye, CheckCircle, Mail, Edit } from "lucide-react";
+import { FileText, Plus, Eye, CheckCircle, Mail, Edit, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/lib/settings-context";
@@ -56,6 +56,17 @@ export default function QuotationsPage() {
       fetchQuotations();
     } catch (error) {
       toast.error("Failed to send quotation email");
+    }
+  };
+
+  const handlePrintPdf = async (no: number) => {
+    try {
+      const res = await api.get(`/quotations/${no}/pdf`, { responseType: 'blob' });
+      const blob = new Blob([res.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (error) {
+      toast.error("Failed to open PDF for printing");
     }
   };
 
@@ -118,7 +129,7 @@ export default function QuotationsPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-zinc-300">{new Date(quote.quotationDate).toLocaleDateString()}</TableCell>
-                      <TableCell className="text-zinc-300font-medium">{quote.customerName}</TableCell>
+                      <TableCell className="text-white font-medium">{quote.customerName}</TableCell>
                       <TableCell className="text-right text-emerald-400 font-medium">
                         {formatCurrency(settings.currency === 'LKR' ? quote.totalLkr : quote.totalUsd, settings.currency)}
                       </TableCell>
@@ -161,6 +172,15 @@ export default function QuotationsPage() {
                             title="Email PDF"
                           >
                             <Mail className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 text-zinc-400 hover:text-blue-400 hover:bg-blue-400/10"
+                            onClick={() => handlePrintPdf(quote.quotationNo)}
+                            title="Print PDF Quotation"
+                          >
+                            <Printer className="w-4 h-4" />
                           </Button>
                           {quote.status !== "CONVERTED" && (
                             <Button 

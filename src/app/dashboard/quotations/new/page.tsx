@@ -5,13 +5,18 @@ import { useRouter, useSearchParams } from "next/navigation";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, Plus, Trash2, ArrowLeft, Gem } from "lucide-react";
+import { Save, Plus, Trash2, ArrowLeft, Gem, Check, ChevronsUpDown } from "lucide-react";
 import { toast } from "sonner";
 import { useSettings } from "@/lib/settings-context";
 import { formatCurrency } from "@/lib/format";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 interface Item {
   id: number;
@@ -25,6 +30,7 @@ interface Item {
 interface Customer {
   id: number;
   customerName: string;
+  phoneNumber?: string;
 }
 
 interface LineItem {
@@ -53,9 +59,14 @@ export default function NewQuotationPage() {
   const [availableItems, setAvailableItems] = useState<Item[]>([]);
 
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>("");
+  const [customerOpen, setCustomerOpen] = useState(false);
+  const [isNewCustomerOpen, setIsNewCustomerOpen] = useState(false);
+  const [newCustomerName, setNewCustomerName] = useState("");
+  const [newCustomerPhone, setNewCustomerPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [quotationStatus, setQuotationStatus] = useState<string | null>(null);
   const [lineItems, setLineItems] = useState<LineItem[]>([]);
+  const [itemSelectKey, setItemSelectKey] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -141,6 +152,33 @@ export default function NewQuotationPage() {
           discountPct: 0,
         }
       ]);
+    }
+  };
+
+  const handleCreateCustomer = async () => {
+    if (!newCustomerName.trim()) {
+      toast.error("Customer name is required");
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const res = await api.post("/customers", {
+        customerName: newCustomerName,
+        phoneNumber: newCustomerPhone,
+      });
+      const createdCustomer = res.data;
+      setCustomers(prev => [...prev, createdCustomer]);
+      setSelectedCustomerId(createdCustomer.id.toString());
+      setIsNewCustomerOpen(false);
+      setNewCustomerName("");
+      setNewCustomerPhone("");
+      toast.success("Customer created successfully");
+    } catch (error) {
+      toast.error("Failed to create customer");
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -256,30 +294,81 @@ export default function NewQuotationPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="customer" className="text-zinc-300">Select Customer *</Label>
-                <Select value={selectedCustomerId} onValueChange={(val) => setSelectedCustomerId(val || "")}>
-                  <SelectTrigger className="bg-black/40 border-zinc-800 text-white">
-                    <SelectValue placeholder="Choose a customer..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-950 border-zinc-800 text-white">
-                    {customers.map(c => (
-                      <SelectItem key={c.id} value={c.id.toString()}>
-                        <span className="font-mono text-zinc-500 text-xs mr-2">#{c.id}</span>
-                        {c.customerName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Popover open={customerOpen} onOpenChange={setCustomerOpen}>
+                  <PopoverTrigger
+                    render={
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={customerOpen}
+                        className="w-full justify-between bg-black/40 border-zinc-800 text-white hover:bg-black/60 hover:text-white"
+                      />
+                    }
+                  >
+                    {selectedCustomerId && customers.find((c) => c.id.toString() === selectedCustomerId)
+                      ? customers.find((c) => c.id.toString() === selectedCustomerId)?.customerName
+                      : "Search by name or phone..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0 bg-zinc-950 border-zinc-800" align="start">
+                    <Command className="bg-zinc-950 text-white">
+                      <CommandInput placeholder="Search name or phone..." className="text-white border-b border-zinc-800" />
+                      <CommandList>
+                        <CommandEmpty>
+                          <div className="flex flex-col items-center justify-center p-4">
+                            <p className="text-zinc-500 mb-4">No customer found.</p>
+                            <Button 
+                              variant="outline" 
+                              className="w-full border-amber-500/50 text-amber-500 hover:bg-amber-500/10"
+                              onClick={() => {
+                                setCustomerOpen(false);
+                                setIsNewCustomerOpen(true);
+                              }}
+                            >
+                              <Plus className="w-4 h-4 mr-2" /> Add New Customer
+                            </Button>
+                          </div>
+                        </CommandEmpty>
+                        <CommandGroup>
+                          {customers.map((c) => (
+                            <CommandItem
+                              key={c.id}
+                              value={`${c.id}-${c.customerName}-${c.phoneNumber || ""}`}
+                              onSelect={(currentValue) => {
+                                const id = currentValue.split('-')[0];
+                                setSelectedCustomerId(id === selectedCustomerId ? "" : id);
+                                setCustomerOpen(false);
+                              }}
+                              className="text-white hover:bg-zinc-800 aria-selected:bg-zinc-800 cursor-pointer"
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedCustomerId === c.id.toString() ? "opacity-100 text-amber-500" : "opacity-0"
+                                )}
+                              />
+                              <div className="flex flex-col">
+                                <span>{c.customerName}</span>
+                                {c.phoneNumber && <span className="text-xs text-zinc-500">{c.phoneNumber}</span>}
+                              </div>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
                 {customers.length === 0 && <p className="text-xs text-amber-500">No customers found. Create one first.</p>}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="notes" className="text-zinc-300">Notes (Optional)</Label>
-                <Input
+                <Textarea
                   id="notes"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Additional details..."
-                  className="bg-black/40 border-zinc-800 text-white"
+                  className="bg-black/40 border-zinc-800 text-white min-h-[100px] resize-y"
                 />
               </div>
             </CardContent>
@@ -319,10 +408,11 @@ export default function NewQuotationPage() {
             <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-zinc-800/50">
               <CardTitle className="text-lg text-white">Line Items</CardTitle>
               <div className="flex gap-2">
-                <Select onValueChange={(val) => {
+                <Select key={`item-select-${itemSelectKey}`} onValueChange={(val) => {
                   if (val) {
                     const item = availableItems.find(i => i.id.toString() === val);
                     handleAddLineItem(item);
+                    setTimeout(() => setItemSelectKey(prev => prev + 1), 50);
                   }
                 }}>
                   <SelectTrigger className="w-[180px] bg-amber-500/10 border-amber-500/20 text-white hover:bg-amber-500/20 transition-colors">
@@ -354,7 +444,8 @@ export default function NewQuotationPage() {
                     <div key={li.id} className="p-4 rounded-xl border border-zinc-800 bg-black/20 space-y-4 relative group">
                       <button 
                         onClick={() => removeLineItem(li.id)}
-                        className="absolute top-4 right-4 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-4 right-4 text-zinc-400 hover:text-red-400 transition-colors"
+                        title="Remove Item"
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
@@ -389,7 +480,7 @@ export default function NewQuotationPage() {
 
                       <div className="grid grid-cols-12 gap-4 items-end bg-zinc-900/50 p-3 rounded-lg border border-zinc-800/50">
                         {settings.currency !== 'LKR' ? (
-                          <div className="col-span-6 md:col-span-4">
+                          <div className="col-span-6 md:col-span-8">
                             <Label className="text-xs text-zinc-400">Base Price ({settings.currency})</Label>
                             <Input 
                               type="number"
@@ -399,7 +490,7 @@ export default function NewQuotationPage() {
                             />
                           </div>
                         ) : (
-                          <div className="col-span-6 md:col-span-4">
+                          <div className="col-span-6 md:col-span-8">
                             <Label className="text-xs text-zinc-400">Base Price (LKR)</Label>
                             <Input 
                               type="number"
@@ -409,7 +500,7 @@ export default function NewQuotationPage() {
                             />
                           </div>
                         )}
-                        <div className="col-span-6 md:col-span-2">
+                        <div className="col-span-6 md:col-span-4">
                           <Label className="text-xs text-zinc-400">Discount (%)</Label>
                           <Input 
                             type="number"
@@ -417,17 +508,6 @@ export default function NewQuotationPage() {
                             onChange={(e) => updateLineItem(li.id, 'discountPct', e.target.value)}
                             className="bg-black/50 border-zinc-700 mt-1 text-red-400 font-bold"
                           />
-                        </div>
-                        <div className="col-span-12 md:col-span-4 text-right">
-                          <div className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Line Total</div>
-                          <div className="text-2xl font-bold text-white">
-                            {formatCurrency(
-                              settings.currency === 'LKR' 
-                                ? ((Number(li.unitPriceLkr) - (Number(li.unitPriceLkr) * (Number(li.discountPct) || 0) / 100)) * Number(li.quantity))
-                                : ((Number(li.unitPriceUsd) - (Number(li.unitPriceUsd) * (Number(li.discountPct) || 0) / 100)) * Number(li.quantity)),
-                              settings.currency
-                            )}
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -438,6 +518,44 @@ export default function NewQuotationPage() {
           </Card>
         </div>
       </div>
+
+      <Dialog open={isNewCustomerOpen} onOpenChange={setIsNewCustomerOpen}>
+        <DialogContent className="bg-zinc-950 border-zinc-800 text-white sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Customer</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Customer Name *</Label>
+              <Input
+                id="name"
+                value={newCustomerName}
+                onChange={(e) => setNewCustomerName(e.target.value)}
+                placeholder="John Doe"
+                className="bg-black/40 border-zinc-800 text-white"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <Input
+                id="phone"
+                value={newCustomerPhone}
+                onChange={(e) => setNewCustomerPhone(e.target.value)}
+                placeholder="+1 234 567 890"
+                className="bg-black/40 border-zinc-800 text-white"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsNewCustomerOpen(false)} className="border-zinc-800 text-white hover:bg-zinc-800">
+              Cancel
+            </Button>
+            <Button onClick={handleCreateCustomer} disabled={loading} className="bg-amber-500 text-black hover:bg-amber-600">
+              {loading ? "Creating..." : "Create Customer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

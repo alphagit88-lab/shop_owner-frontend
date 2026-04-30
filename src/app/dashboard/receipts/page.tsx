@@ -5,7 +5,7 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Receipt, Eye, Mail } from "lucide-react";
+import { Receipt, Eye, Mail, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/lib/settings-context";
@@ -57,6 +57,17 @@ export default function ReceiptsPage() {
     }
   };
 
+  const handlePrintPdf = async (no: number) => {
+    try {
+      const res = await api.get(`/receipts/${no}/pdf`, { responseType: 'blob' });
+      const blob = new Blob([res.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (error) {
+      toast.error("Failed to open PDF for printing");
+    }
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -99,7 +110,7 @@ export default function ReceiptsPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-zinc-300">{new Date(receipt.receiptDate).toLocaleDateString()}</TableCell>
-                       <TableCell className="text-zinc-300font-medium">{receipt.customerName}</TableCell>
+                      <TableCell className="text-white font-medium">{receipt.customerName}</TableCell>
                       <TableCell className="text-zinc-400">{receipt.paymentMethod || "Cash"}</TableCell>
                       <TableCell className="text-right text-emerald-400 font-medium">
                         {formatCurrency(settings.currency === 'LKR' ? receipt.totalPaidLkr : receipt.totalPaidUsd, settings.currency)}
@@ -123,6 +134,15 @@ export default function ReceiptsPage() {
                             title="Email PDF Receipt"
                           >
                             <Mail className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 text-zinc-400 hover:text-blue-400 hover:bg-blue-400/10"
+                            onClick={() => handlePrintPdf(receipt.receiptNo)}
+                            title="Print PDF Receipt"
+                          >
+                            <Printer className="w-4 h-4" />
                           </Button>
                         </div>
                       </TableCell>
