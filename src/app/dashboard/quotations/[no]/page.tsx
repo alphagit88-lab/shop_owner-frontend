@@ -9,8 +9,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Mail, Printer, CheckCircle, Edit } from "lucide-react";
 import { toast } from "sonner";
+import { useSettings } from "@/lib/settings-context";
+import { formatCurrency } from "@/lib/format";
 
 export default function QuotationDetailPage() {
+  const { settings } = useSettings();
   const params = useParams();
   const router = useRouter();
   const [quotation, setQuotation] = useState<any>(null);
@@ -153,10 +156,9 @@ export default function QuotationDetailPage() {
                   <TableHead className="text-zinc-400 print:text-gray-600">Code</TableHead>
                   <TableHead className="text-zinc-400 print:text-gray-600">Description</TableHead>
                   <TableHead className="text-zinc-400 print:text-gray-600 text-right">Qty</TableHead>
-                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Base (USD)</TableHead>
-                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Disc. (USD)</TableHead>
-                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Total (USD)</TableHead>
-                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Total (LKR)</TableHead>
+                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Base Price</TableHead>
+                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Disc.</TableHead>
+                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Total</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -167,17 +169,21 @@ export default function QuotationDetailPage() {
                       <TableCell className="font-medium text-white print:text-black">{item.itemCode || "-"}</TableCell>
                       <TableCell className="text-zinc-300 print:text-gray-800">{item.itemDescription}</TableCell>
                       <TableCell className="text-right text-zinc-300 print:text-gray-800">{item.quantity}</TableCell>
-                      <TableCell className="text-right text-zinc-400 print:text-gray-600">${Number(item.unitPriceUsd).toLocaleString()}</TableCell>
+                      <TableCell className="text-right text-zinc-400 print:text-gray-600">
+                        {formatCurrency(settings.currency === 'LKR' ? item.unitPriceLkr : item.unitPriceUsd, settings.currency)}
+                      </TableCell>
                       <TableCell className="text-right text-red-400 print:text-red-600">-{item.discountPct}%</TableCell>
-                      <TableCell className="text-right text-emerald-400 print:text-emerald-700 font-medium">${Number(item.lineTotalUsd).toLocaleString()}</TableCell>
-                      <TableCell className="text-right text-amber-400 print:text-orange-700 font-medium">Rs.{Number(item.lineTotalLkr).toLocaleString()}</TableCell>
+                      <TableCell className="text-right text-emerald-400 print:text-emerald-700 font-medium">
+                        {formatCurrency(settings.currency === 'LKR' ? item.lineTotalLkr : item.lineTotalUsd, settings.currency)}
+                      </TableCell>
                     </TableRow>
                   );
                 })}
                 <TableRow className="border-t-2 border-zinc-700 print:border-gray-400 bg-zinc-900/30 print:bg-gray-50">
-                  <TableCell colSpan={5} className="text-right font-bold text-white print:text-black">GRAND TOTAL:</TableCell>
-                  <TableCell className="text-right font-bold text-emerald-400 print:text-emerald-700 text-lg">${Number(quotation.totalUsd).toLocaleString()}</TableCell>
-                  <TableCell className="text-right font-bold text-amber-500 print:text-orange-700 text-lg">Rs.{Number(quotation.totalLkr).toLocaleString()}</TableCell>
+                  <TableCell colSpan={5} className="text-right font-bold text-white print:text-black">GRAND TOTAL ({settings.currency}):</TableCell>
+                  <TableCell className="text-right font-bold text-emerald-400 print:text-emerald-700 text-lg">
+                    {formatCurrency(settings.currency === 'LKR' ? quotation.totalLkr : quotation.totalUsd, settings.currency)}
+                  </TableCell>
                 </TableRow>
               </TableBody>
             </Table>

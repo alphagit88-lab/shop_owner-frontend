@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Save, Plus, Trash2, ArrowLeft, Gem } from "lucide-react";
 import { toast } from "sonner";
+import { useSettings } from "@/lib/settings-context";
+import { formatCurrency } from "@/lib/format";
 
 interface Item {
   id: number;
@@ -39,6 +41,7 @@ interface LineItem {
 const USD_LKR_RATE = 319.36;
 
 export default function NewQuotationPage() {
+  const { settings } = useSettings();
   const router = useRouter();
   const searchParams = useSearchParams();
   const preselectItemId = searchParams.get("item");
@@ -293,12 +296,8 @@ export default function NewQuotationPage() {
               </div>
               <div className="pt-4 border-t border-amber-500/20">
                 <div className="flex justify-between items-end">
-                  <span className="text-sm text-zinc-400">Total (USD)</span>
-                  <span className="text-3xl font-bold text-white">${totals.usd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                </div>
-                <div className="flex justify-between items-end mt-2">
-                  <span className="text-sm text-zinc-400">Total (LKR)</span>
-                  <span className="text-xl font-medium text-amber-500">Rs. {totals.lkr.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <span className="text-sm text-zinc-400">Total ({settings.currency})</span>
+                  <span className="text-3xl font-bold text-white">{formatCurrency(settings.currency === 'LKR' ? totals.lkr : totals.usd, settings.currency)}</span>
                 </div>
               </div>
 
@@ -366,8 +365,7 @@ export default function NewQuotationPage() {
                           <Input 
                             value={li.itemCode} 
                             onChange={(e) => updateLineItem(li.id, 'itemCode', e.target.value)}
-                            className="bg-white/5 border-zinc-800 mt-1 text-white disabled:text-white/60 disabled:bg-white/10"
-                            disabled={!!li.itemId}
+                            className="bg-white/5 border-zinc-800 mt-1 text-white"
                           />
                         </div>
                         <div className="col-span-12 md:col-span-7">
@@ -375,8 +373,7 @@ export default function NewQuotationPage() {
                           <Input 
                             value={li.itemDescription} 
                             onChange={(e) => updateLineItem(li.id, 'itemDescription', e.target.value)}
-                            className="bg-white/5 border-zinc-800 mt-1 text-white disabled:text-white/60 disabled:bg-white/10"
-                            disabled={!!li.itemId}
+                            className="bg-white/5 border-zinc-800 mt-1 text-white"
                           />
                         </div>
                         <div className="col-span-12 md:col-span-2">
@@ -391,26 +388,27 @@ export default function NewQuotationPage() {
                       </div>
 
                       <div className="grid grid-cols-12 gap-4 items-end bg-zinc-900/50 p-3 rounded-lg border border-zinc-800/50">
-                        <div className="col-span-6 md:col-span-3">
-                          <Label className="text-xs text-zinc-400">Base Price (USD)</Label>
-                          <Input 
-                            type="number"
-                            value={li.unitPriceUsd} 
-                            onChange={(e) => updateLineItem(li.id, 'unitPriceUsd', e.target.value)}
-                            className="bg-black/50 border-zinc-700 mt-1 text-emerald-400 font-medium disabled:text-emerald-400/60 disabled:bg-black/80"
-                            disabled={!!li.itemId}
-                          />
-                        </div>
-                        <div className="col-span-6 md:col-span-3">
-                          <Label className="text-xs text-zinc-400">Base Price (LKR)</Label>
-                          <Input 
-                            type="number"
-                            value={li.unitPriceLkr} 
-                            onChange={(e) => updateLineItem(li.id, 'unitPriceLkr', e.target.value)}
-                            className="bg-black/50 border-zinc-700 mt-1 text-emerald-400 font-medium disabled:text-emerald-400/60 disabled:bg-black/80"
-                            disabled={!!li.itemId}
-                          />
-                        </div>
+                        {settings.currency !== 'LKR' ? (
+                          <div className="col-span-6 md:col-span-4">
+                            <Label className="text-xs text-zinc-400">Base Price ({settings.currency})</Label>
+                            <Input 
+                              type="number"
+                              value={li.unitPriceUsd} 
+                              onChange={(e) => updateLineItem(li.id, 'unitPriceUsd', e.target.value)}
+                              className="bg-black/50 border-zinc-700 mt-1 text-emerald-400 font-medium"
+                            />
+                          </div>
+                        ) : (
+                          <div className="col-span-6 md:col-span-4">
+                            <Label className="text-xs text-zinc-400">Base Price (LKR)</Label>
+                            <Input 
+                              type="number"
+                              value={li.unitPriceLkr} 
+                              onChange={(e) => updateLineItem(li.id, 'unitPriceLkr', e.target.value)}
+                              className="bg-black/50 border-zinc-700 mt-1 text-emerald-400 font-medium"
+                            />
+                          </div>
+                        )}
                         <div className="col-span-6 md:col-span-2">
                           <Label className="text-xs text-zinc-400">Discount (%)</Label>
                           <Input 
@@ -423,10 +421,12 @@ export default function NewQuotationPage() {
                         <div className="col-span-12 md:col-span-4 text-right">
                           <div className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Line Total</div>
                           <div className="text-2xl font-bold text-white">
-                            ${((Number(li.unitPriceUsd) - (Number(li.unitPriceUsd) * (Number(li.discountPct) || 0) / 100)) * Number(li.quantity)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          </div>
-                          <div className="text-sm text-amber-500">
-                            Rs. {((Number(li.unitPriceLkr) - (Number(li.unitPriceLkr) * (Number(li.discountPct) || 0) / 100)) * Number(li.quantity)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            {formatCurrency(
+                              settings.currency === 'LKR' 
+                                ? ((Number(li.unitPriceLkr) - (Number(li.unitPriceLkr) * (Number(li.discountPct) || 0) / 100)) * Number(li.quantity))
+                                : ((Number(li.unitPriceUsd) - (Number(li.unitPriceUsd) * (Number(li.discountPct) || 0) / 100)) * Number(li.quantity)),
+                              settings.currency
+                            )}
                           </div>
                         </div>
                       </div>

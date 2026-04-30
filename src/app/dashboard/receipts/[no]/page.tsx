@@ -8,8 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowLeft, Mail, Printer } from "lucide-react";
 import { toast } from "sonner";
+import { useSettings } from "@/lib/settings-context";
+import { formatCurrency } from "@/lib/format";
 
 export default function ReceiptDetailPage() {
+  const { settings } = useSettings();
   const params = useParams();
   const router = useRouter();
   const [receipt, setReceipt] = useState<any>(null);
@@ -122,8 +125,7 @@ export default function ReceiptDetailPage() {
                   <TableHead className="text-zinc-400 print:text-gray-600">Description</TableHead>
                   <TableHead className="text-zinc-400 print:text-gray-600 text-right">Qty</TableHead>
                   <TableHead className="text-zinc-400 print:text-gray-600 text-right">Disc (%)</TableHead>
-                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Total (USD)</TableHead>
-                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Total (LKR)</TableHead>
+                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Total</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -133,14 +135,16 @@ export default function ReceiptDetailPage() {
                     <TableCell className="text-zinc-300 print:text-gray-800">{item.itemDescription}</TableCell>
                     <TableCell className="text-right text-zinc-300 print:text-gray-800">{item.quantity}</TableCell>
                     <TableCell className="text-right text-zinc-400 print:text-gray-500">{item.discountPct}%</TableCell>
-                    <TableCell className="text-right text-emerald-400 print:text-emerald-700 font-medium">${Number(item.lineTotalUsd).toLocaleString()}</TableCell>
-                    <TableCell className="text-right text-amber-400 print:text-orange-700 font-medium">Rs.{Number(item.lineTotalLkr).toLocaleString()}</TableCell>
+                    <TableCell className="text-right text-emerald-400 print:text-emerald-700 font-medium">
+                      {formatCurrency(settings.currency === 'LKR' ? item.lineTotalLkr : item.lineTotalUsd, settings.currency)}
+                    </TableCell>
                   </TableRow>
                 ))}
                 <TableRow className="border-t-2 border-zinc-700 print:border-gray-400 bg-zinc-900/30 print:bg-gray-50">
-                  <TableCell colSpan={4} className="text-right font-bold text-white print:text-black">TOTAL PAID:</TableCell>
-                  <TableCell className="text-right font-bold text-emerald-400 print:text-emerald-700 text-lg">${Number(receipt.totalPaidUsd).toLocaleString()}</TableCell>
-                  <TableCell className="text-right font-bold text-amber-500 print:text-orange-700 text-lg">Rs.{Number(receipt.totalPaidLkr).toLocaleString()}</TableCell>
+                  <TableCell colSpan={4} className="text-right font-bold text-white print:text-black">TOTAL PAID ({settings.currency}):</TableCell>
+                  <TableCell className="text-right font-bold text-emerald-400 print:text-emerald-700 text-lg">
+                    {formatCurrency(settings.currency === 'LKR' ? receipt.totalPaidLkr : receipt.totalPaidUsd, settings.currency)}
+                  </TableCell>
                 </TableRow>
               </TableBody>
             </Table>

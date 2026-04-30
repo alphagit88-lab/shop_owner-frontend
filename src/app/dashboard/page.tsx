@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Gem, FileText, Users, Receipt, TrendingUp, ArrowUpRight } from "lucide-react";
 import api from "@/lib/api";
-import { formatUsd, formatLkr } from "@/lib/format";
+import { formatCurrency } from "@/lib/format";
+import { useSettings } from "@/lib/settings-context";
 
 export default function DashboardPage() {
+  const { settings } = useSettings();
   const [stats, setStats] = useState({
     items: 0,
     quotations: 0,
@@ -74,31 +76,19 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card className="bg-gradient-to-br from-amber-500/20 to-amber-600/5 border-amber-500/20 backdrop-blur-sm">
+      <div className="grid gap-4">
+        <Card className={`bg-gradient-to-br ${settings.currency === 'LKR' ? 'from-emerald-500/20 to-emerald-600/5 border-emerald-500/20' : 'from-amber-500/20 to-amber-600/5 border-amber-500/20'} backdrop-blur-sm`}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-amber-500 uppercase tracking-wider">Revenue (USD)</CardTitle>
-            <TrendingUp className="w-4 h-4 text-amber-500" />
+            <CardTitle className={`text-sm font-medium ${settings.currency === 'LKR' ? 'text-emerald-500' : 'text-amber-500'} uppercase tracking-wider`}>Total Revenue ({settings.currency})</CardTitle>
+            <TrendingUp className={`w-4 h-4 ${settings.currency === 'LKR' ? 'text-emerald-500' : 'text-amber-500'}`} />
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold text-white">{formatUsd(stats.totalUsd)}</div>
-            <div className="mt-2 flex items-center text-xs text-amber-500/70 font-medium">
-              <ArrowUpRight className="w-3 h-3 mr-1" />
-              Total earnings in US Dollars
+            <div className="text-4xl font-bold text-white">
+              {formatCurrency(settings.currency === 'LKR' ? stats.totalLkr : stats.totalUsd, settings.currency)}
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 border-emerald-500/20 backdrop-blur-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-emerald-500 uppercase tracking-wider">Revenue (LKR)</CardTitle>
-            <TrendingUp className="w-4 h-4 text-emerald-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold text-white">{formatLkr(stats.totalLkr)}</div>
-            <div className="mt-2 flex items-center text-xs text-emerald-500/70 font-medium">
+            <div className={`mt-2 flex items-center text-xs ${settings.currency === 'LKR' ? 'text-emerald-500/70' : 'text-amber-500/70'} font-medium`}>
               <ArrowUpRight className="w-3 h-3 mr-1" />
-              Total earnings in Sri Lankan Rupees
+              Total earnings in {settings.currency === 'LKR' ? 'Sri Lankan Rupees' : settings.currency === 'USD' ? 'US Dollars' : settings.currency}
             </div>
           </CardContent>
         </Card>

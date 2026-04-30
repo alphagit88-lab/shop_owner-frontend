@@ -9,9 +9,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, Edit, Trash2, DollarSign, Mail, Phone, User } from "lucide-react";
+import { Search, Plus, Edit, Trash2, DollarSign, Mail, Phone, User, Banknote } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useSettings } from "@/lib/settings-context";
+import { formatCurrency } from "@/lib/format";
 
 interface Item {
   id: number;
@@ -32,6 +34,7 @@ interface Customer {
 const USD_LKR_RATE = 319.36;
 
 export default function ItemsPage() {
+  const { settings } = useSettings();
   const [items, setItems] = useState<Item[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -193,39 +196,42 @@ export default function ItemsPage() {
                   className="bg-white/5 border-zinc-800 focus:ring-amber-500/50"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="unitPriceUsd">Price (USD) *</Label>
-                  <Input
-                    id="unitPriceUsd"
-                    type="number"
-                    step="0.01"
-                    required
-                    value={formData.unitPriceUsd}
-                    onChange={(e) => {
-                      const usd = e.target.value;
-                      const lkr = usd ? (Number(usd) * USD_LKR_RATE).toFixed(2) : "";
-                      setFormData({ ...formData, unitPriceUsd: usd, unitPriceLkr: lkr });
-                    }}
-                    className="bg-white/5 border-zinc-800 focus:ring-amber-500/50"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="unitPriceLkr">Price (LKR) *</Label>
-                  <Input
-                    id="unitPriceLkr"
-                    type="number"
-                    step="0.01"
-                    required
-                    value={formData.unitPriceLkr}
-                    onChange={(e) => {
-                      const lkr = e.target.value;
-                      const usd = lkr ? (Number(lkr) / USD_LKR_RATE).toFixed(2) : "";
-                      setFormData({ ...formData, unitPriceLkr: lkr, unitPriceUsd: usd });
-                    }}
-                    className="bg-white/5 border-zinc-800 focus:ring-amber-500/50"
-                  />
-                </div>
+              <div className="grid grid-cols-1 gap-4">
+                {settings.currency !== 'LKR' ? (
+                  <div className="space-y-2">
+                    <Label htmlFor="unitPriceUsd">Price ({settings.currency}) *</Label>
+                    <Input
+                      id="unitPriceUsd"
+                      type="number"
+                      step="0.01"
+                      required
+                      value={formData.unitPriceUsd}
+                      onChange={(e) => {
+                        const usd = e.target.value;
+                        const lkr = usd ? (Number(usd) * USD_LKR_RATE).toFixed(2) : "";
+                        setFormData({ ...formData, unitPriceUsd: usd, unitPriceLkr: lkr });
+                      }}
+                      className="bg-white/5 border-zinc-800 focus:ring-amber-500/50"
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Label htmlFor="unitPriceLkr">Price (LKR) *</Label>
+                    <Input
+                      id="unitPriceLkr"
+                      type="number"
+                      step="0.01"
+                      required
+                      value={formData.unitPriceLkr}
+                      onChange={(e) => {
+                        const lkr = e.target.value;
+                        const usd = lkr ? (Number(lkr) / USD_LKR_RATE).toFixed(2) : "";
+                        setFormData({ ...formData, unitPriceLkr: lkr, unitPriceUsd: usd });
+                      }}
+                      className="bg-white/5 border-zinc-800 focus:ring-amber-500/50"
+                    />
+                  </div>
+                )}
               </div>
               <div className="pt-4 flex justify-end gap-2">
                 <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)} className="hover:bg-white/10 hover:text-white">
@@ -337,8 +343,7 @@ export default function ItemsPage() {
                 <TableRow className="border-zinc-800/50 hover:bg-transparent">
                   <TableHead className="text-zinc-400">Code</TableHead>
                   <TableHead className="text-zinc-400">Description</TableHead>
-                  <TableHead className="text-zinc-400 text-right">Price (USD)</TableHead>
-                  <TableHead className="text-zinc-400 text-right">Price (LKR)</TableHead>
+                  <TableHead className="text-zinc-400 text-right">Price</TableHead>
                   <TableHead className="text-zinc-400 text-center">Status</TableHead>
                   <TableHead className="text-zinc-400 text-right">Actions</TableHead>
                 </TableRow>
@@ -357,8 +362,9 @@ export default function ItemsPage() {
                     <TableRow key={item.id} className="border-zinc-800/50 hover:bg-white/5 transition-colors">
                       <TableCell className="font-medium text-white">{item.itemCode || "-"}</TableCell>
                       <TableCell className="text-zinc-300 max-w-[300px] truncate">{item.itemDescription}</TableCell>
-                      <TableCell className="text-right text-emerald-400 font-medium">${Number(item.unitPriceUsd).toLocaleString()}</TableCell>
-                      <TableCell className="text-right text-amber-400/90 font-medium">Rs.{Number(item.unitPriceLkr).toLocaleString()}</TableCell>
+                      <TableCell className="text-right text-emerald-400 font-medium">
+                        {formatCurrency(settings.currency === 'LKR' ? item.unitPriceLkr : item.unitPriceUsd, settings.currency)}
+                      </TableCell>
                       <TableCell className="text-center">
                         <Badge variant="outline" className={item.isAvailable ? "border-emerald-500/30 text-emerald-500 bg-emerald-500/10" : "border-red-500/30 text-red-500 bg-red-500/10"}>
                           {item.isAvailable ? "In Stock" : "Sold"}
@@ -373,7 +379,7 @@ export default function ItemsPage() {
                             onClick={() => handleOpenPricingModal(item.id)}
                             title="Create Quotation"
                           >
-                            <DollarSign className="w-4 h-4" />
+                            <Banknote className="w-4 h-4" />
                           </Button>
                           <Button 
                             variant="ghost" 

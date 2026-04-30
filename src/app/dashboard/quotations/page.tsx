@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, Plus, Eye, CheckCircle, Mail, Edit } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useSettings } from "@/lib/settings-context";
+import { formatCurrency } from "@/lib/format";
 
 interface Quotation {
   quotationNo: number;
@@ -20,6 +22,7 @@ interface Quotation {
 }
 
 export default function QuotationsPage() {
+  const { settings } = useSettings();
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -91,8 +94,7 @@ export default function QuotationsPage() {
                   <TableHead className="text-zinc-400">Quote No.</TableHead>
                   <TableHead className="text-zinc-400">Date</TableHead>
                   <TableHead className="text-zinc-400">Customer</TableHead>
-                  <TableHead className="text-zinc-400 text-right">Total (USD)</TableHead>
-                  <TableHead className="text-zinc-400 text-right">Total (LKR)</TableHead>
+                  <TableHead className="text-zinc-400 text-right">Total</TableHead>
                   <TableHead className="text-zinc-400 text-center">Status</TableHead>
                   <TableHead className="text-zinc-400 text-right">Actions</TableHead>
                 </TableRow>
@@ -116,9 +118,10 @@ export default function QuotationsPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-zinc-300">{new Date(quote.quotationDate).toLocaleDateString()}</TableCell>
-                      <TableCell className="text-zinc-300 font-medium">{quote.customerName}</TableCell>
-                      <TableCell className="text-right text-emerald-400 font-medium">${Number(quote.totalUsd).toLocaleString()}</TableCell>
-                      <TableCell className="text-right text-amber-400/90 font-medium">Rs.{Number(quote.totalLkr).toLocaleString()}</TableCell>
+                      <TableCell className="text-zinc-300font-medium">{quote.customerName}</TableCell>
+                      <TableCell className="text-right text-emerald-400 font-medium">
+                        {formatCurrency(settings.currency === 'LKR' ? quote.totalLkr : quote.totalUsd, settings.currency)}
+                      </TableCell>
                       <TableCell className="text-center">
                         <Badge variant="outline" className={
                           quote.status === "DRAFT" ? "border-zinc-500/30 text-zinc-400 bg-zinc-500/10" :

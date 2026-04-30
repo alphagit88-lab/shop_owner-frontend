@@ -8,6 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Receipt, Eye, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useSettings } from "@/lib/settings-context";
+import { formatCurrency } from "@/lib/format";
 
 interface ReceiptData {
   receiptNo: number;
@@ -19,6 +21,7 @@ interface ReceiptData {
 }
 
 export default function ReceiptsPage() {
+  const { settings } = useSettings();
   const [receipts, setReceipts] = useState<ReceiptData[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -73,8 +76,7 @@ export default function ReceiptsPage() {
                   <TableHead className="text-zinc-400">Date</TableHead>
                   <TableHead className="text-zinc-400">Customer</TableHead>
                   <TableHead className="text-zinc-400">Payment Method</TableHead>
-                  <TableHead className="text-zinc-400 text-right">Paid (USD)</TableHead>
-                  <TableHead className="text-zinc-400 text-right">Paid (LKR)</TableHead>
+                  <TableHead className="text-zinc-400 text-right">Paid</TableHead>
                   <TableHead className="text-zinc-400 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -97,10 +99,11 @@ export default function ReceiptsPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-zinc-300">{new Date(receipt.receiptDate).toLocaleDateString()}</TableCell>
-                      <TableCell className="text-zinc-300 font-medium">{receipt.customerName}</TableCell>
+                       <TableCell className="text-zinc-300font-medium">{receipt.customerName}</TableCell>
                       <TableCell className="text-zinc-400">{receipt.paymentMethod || "Cash"}</TableCell>
-                      <TableCell className="text-right text-emerald-400 font-medium">${Number(receipt.totalPaidUsd).toLocaleString()}</TableCell>
-                      <TableCell className="text-right text-amber-400/90 font-medium">Rs.{Number(receipt.totalPaidLkr).toLocaleString()}</TableCell>
+                      <TableCell className="text-right text-emerald-400 font-medium">
+                        {formatCurrency(settings.currency === 'LKR' ? receipt.totalPaidLkr : receipt.totalPaidUsd, settings.currency)}
+                      </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button 
