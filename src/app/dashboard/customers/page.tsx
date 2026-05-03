@@ -180,7 +180,7 @@ export default function CustomersPage() {
                     <TableRow className="border-zinc-800/50 hover:bg-transparent">
                       <TableHead className="text-zinc-400">Name</TableHead>
                       <TableHead className="text-zinc-400">Contact</TableHead>
-                      <TableHead className="text-zinc-400">Added</TableHead>
+                      <TableHead className="hidden md:table-cell text-zinc-400">Added</TableHead>
                       <TableHead className="text-zinc-400 text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -213,7 +213,7 @@ export default function CustomersPage() {
                               )}
                             </div>
                           </TableCell>
-                          <TableCell className="text-zinc-400 text-xs whitespace-nowrap">
+                          <TableCell className="hidden md:table-cell text-zinc-400 text-xs whitespace-nowrap">
                             {new Date(customer.createdAt).toLocaleDateString()}
                           </TableCell>
                           <TableCell className="text-right">

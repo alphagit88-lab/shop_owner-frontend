@@ -333,7 +333,7 @@ export default function ItemsPage() {
                     <TableRow className="border-zinc-800/50 hover:bg-transparent">
                       <TableHead className="text-zinc-400">Item</TableHead>
                       <TableHead className="text-zinc-400 text-right">Price</TableHead>
-                      <TableHead className="text-zinc-400 text-center">Status</TableHead>
+                      <TableHead className="hidden sm:table-cell text-zinc-400 text-center">Status</TableHead>
                       <TableHead className="text-zinc-400 text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -350,15 +350,20 @@ export default function ItemsPage() {
                       items.map((item) => (
                         <TableRow key={item.id} className="border-zinc-800/50 hover:bg-white/5 transition-colors">
                           <TableCell>
-                            <div className="flex flex-col">
-                              <span className="font-medium text-white text-sm">{item.itemCode || "NO CODE"}</span>
+                            <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-white text-sm">{item.itemCode || "NO CODE"}</span>
+                                <Badge variant="outline" className={`sm:hidden text-[9px] h-4 px-1 ${item.isAvailable ? "border-emerald-500/30 text-emerald-500 bg-emerald-500/10" : "border-red-500/30 text-red-500 bg-red-500/10"}`}>
+                                  {item.isAvailable ? "In" : "Out"}
+                                </Badge>
+                              </div>
                               <span className="text-[11px] text-zinc-500 truncate max-w-[120px] md:max-w-[250px]">{item.itemDescription}</span>
                             </div>
                           </TableCell>
                           <TableCell className="text-right text-emerald-400 font-semibold text-sm whitespace-nowrap">
                             {formatCurrency(settings.currency === 'LKR' ? item.unitPriceLkr : item.unitPriceUsd, settings.currency)}
                           </TableCell>
-                          <TableCell className="text-center">
+                          <TableCell className="hidden sm:table-cell text-center">
                             <Badge variant="outline" className={`text-[10px] h-5 px-1.5 ${item.isAvailable ? "border-emerald-500/30 text-emerald-500 bg-emerald-500/10" : "border-red-500/30 text-red-500 bg-red-500/10"}`}>
                               {item.isAvailable ? "Stock" : "Sold"}
                             </Badge>
