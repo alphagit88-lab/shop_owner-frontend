@@ -46,7 +46,7 @@ export default function ItemsPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [customerSearch, setCustomerSearch] = useState("");
-  
+
   const [formData, setFormData] = useState({
     itemCode: "",
     itemDescription: "",
@@ -160,9 +160,9 @@ export default function ItemsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white">Items Catalog</h2>
-          <p className="text-zinc-500 text-sm md:text-base">Manage your jewelry items, stock, and pricing.</p>
+          <p className="text-zinc-500 text-sm md:text-base">Manage your items, stock and pricing.</p>
         </div>
-        
+
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger render={
             <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold">
@@ -269,11 +269,10 @@ export default function ItemsPage() {
                   <button
                     key={customer.id}
                     onClick={() => setSelectedCustomer(customer)}
-                    className={`w-full text-left p-3 rounded-xl border transition-all duration-200 ${
-                      selectedCustomer?.id === customer.id
-                        ? "border-blue-500/50 bg-blue-500/10"
-                        : "border-zinc-800 bg-black/20 hover:bg-white/5 hover:border-zinc-700"
-                    }`}
+                    className={`w-full text-left p-3 rounded-xl border transition-all duration-200 ${selectedCustomer?.id === customer.id
+                      ? "border-blue-500/50 bg-blue-500/10"
+                      : "border-zinc-800 bg-black/20 hover:bg-white/5 hover:border-zinc-700"
+                      }`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="min-w-0 flex-1">
@@ -372,25 +371,25 @@ export default function ItemsPage() {
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-1 md:gap-2">
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 className="h-7 w-7 text-zinc-400 hover:text-blue-400"
                                 onClick={() => handleOpenPricingModal(item.id)}
                               >
                                 <Banknote className="w-3.5 h-3.5" />
                               </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 className="h-7 w-7 text-zinc-400 hover:text-white"
                                 onClick={() => handleOpenDialog(item)}
                               >
                                 <Edit className="w-3.5 h-3.5" />
                               </Button>
-                               <Button 
-                                variant="ghost" 
-                                size="icon" 
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 className="h-7 w-7 text-zinc-400 hover:text-red-400"
                                 onClick={() => handleDeleteItem(item.id)}
                               >

@@ -47,7 +47,7 @@ export default function LoginPage() {
           </div>
           <CardTitle className="text-3xl font-bold tracking-tight text-white">TitanCore Technologies</CardTitle>
           <CardDescription className="text-zinc-400">
-            Admin Dashboard — Secure Access
+            Admin Dashboard - Secure Access
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -56,7 +56,7 @@ export default function LoginPage() {
               <Label htmlFor="username" className="text-zinc-300">Username</Label>
               <Input
                 id="username"
-                placeholder="admin"
+                placeholder="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="bg-white/5 border-zinc-800 text-white placeholder:text-zinc-600 focus:ring-blue-500/50"
@@ -75,8 +75,8 @@ export default function LoginPage() {
                 required
               />
             </div>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold h-11 shadow-lg shadow-blue-500/10"
               disabled={loading}
             >

@@ -25,7 +25,7 @@ export default function CustomersPage() {
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
-  
+
   const [formData, setFormData] = useState({
     customerName: "",
     phoneNumber: "",
@@ -100,9 +100,9 @@ export default function CustomersPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-white">Customers</h2>
-          <p className="text-zinc-500 text-sm md:text-base">Manage your client database and contact details.</p>
+          <p className="text-zinc-500 text-sm md:text-base">Manage your customers and details.</p>
         </div>
-        
+
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger render={
             <Button onClick={handleOpenDialog} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold">
@@ -218,17 +218,17 @@ export default function CustomersPage() {
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 className="h-8 w-8 p-0 text-zinc-400 hover:text-white"
                                 onClick={() => handleEditCustomer(customer)}
                               >
                                 <Edit className="w-4 h-4" />
                               </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 className="h-8 w-8 p-0 text-zinc-400 hover:text-red-400"
                                 onClick={() => handleDeleteCustomer(customer.id)}
                               >
