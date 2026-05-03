@@ -155,13 +155,18 @@ export default function ReceiptsPage() {
                                 <Receipt className="w-3.5 h-3.5 text-emerald-500" />
                                 R-{receipt.receiptNo.toString().padStart(5, '0')}
                               </div>
-                              <span className="text-[10px] text-zinc-500 ml-5">
-                                {new Date(receipt.receiptDate).toLocaleDateString()}
-                              </span>
+                              <div className="flex items-center gap-1.5 ml-5">
+                                <span className="text-[10px] text-zinc-500">
+                                  {new Date(receipt.receiptDate).toLocaleDateString()}
+                                </span>
+                                <span className="sm:hidden text-[8px] font-bold px-1 rounded-full border border-emerald-500/30 text-emerald-500 bg-emerald-500/10">
+                                  PAID
+                                </span>
+                              </div>
                             </div>
                           </TableCell>
                           <TableCell>
-                            <div className="text-sm text-white font-medium truncate max-w-[100px] md:max-w-none">
+                            <div className="text-white font-medium text-sm truncate max-w-[100px] sm:max-w-none">
                               {receipt.customerName}
                             </div>
                             <div className="text-[10px] text-zinc-500 hidden md:block">
@@ -192,7 +197,7 @@ export default function ReceiptsPage() {
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
-                                className="h-8 w-8 text-zinc-400 hover:text-blue-400"
+                                className="h-8 w-8 text-zinc-400 hover:text-blue-400 hidden md:flex"
                                 onClick={() => handlePrintPdf(receipt.receiptNo)}
                               >
                                 <Printer className="w-4 h-4" />
@@ -200,7 +205,7 @@ export default function ReceiptsPage() {
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
-                                className="h-8 w-8 text-zinc-400 hover:text-emerald-500"
+                                className="h-8 w-8 text-zinc-400 hover:text-emerald-500 hidden md:flex"
                                 onClick={() => handleWhatsAppShare(receipt)}
                               >
                                 <MessageCircle className="w-4 h-4" />

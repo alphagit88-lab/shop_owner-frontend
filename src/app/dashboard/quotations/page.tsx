@@ -107,7 +107,7 @@ export default function QuotationsPage() {
                       <TableHead className="text-zinc-400">ID & Date</TableHead>
                       <TableHead className="text-zinc-400">Customer</TableHead>
                       <TableHead className="text-zinc-400 text-right">Amount</TableHead>
-                      <TableHead className="text-zinc-400 text-center">Status</TableHead>
+                      <TableHead className="text-zinc-400 text-center hidden sm:table-cell">Status</TableHead>
                       <TableHead className="text-zinc-400 text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -129,18 +129,27 @@ export default function QuotationsPage() {
                                 <FileText className="w-3.5 h-3.5 text-zinc-500" />
                                 Q-{quote.quotationNo.toString().padStart(5, '0')}
                               </div>
-                              <span className="text-[10px] text-zinc-500 ml-5">
-                                {new Date(quote.quotationDate).toLocaleDateString()}
-                              </span>
+                              <div className="flex items-center gap-1.5 ml-5">
+                                <span className="text-[10px] text-zinc-500">
+                                  {new Date(quote.quotationDate).toLocaleDateString()}
+                                </span>
+                                <span className={`sm:hidden text-[8px] font-bold px-1 rounded-full border ${
+                                  quote.status === "DRAFT" ? "border-zinc-500/30 text-zinc-400 bg-zinc-500/10" :
+                                  quote.status === "SENT" ? "border-blue-500/30 text-blue-400 bg-blue-500/10" :
+                                  "border-emerald-500/30 text-emerald-500 bg-emerald-500/10"
+                                }`}>
+                                  {quote.status}
+                                </span>
+                              </div>
                             </div>
                           </TableCell>
-                          <TableCell className="text-white font-medium text-sm truncate max-w-[80px] md:max-w-none">
+                          <TableCell className="text-white font-medium text-sm truncate max-w-[100px] sm:max-w-none">
                             {quote.customerName}
                           </TableCell>
                           <TableCell className="text-right text-emerald-400 font-bold text-sm whitespace-nowrap">
                             {formatCurrency(quote.totalLkr, 'LKR')}
                           </TableCell>
-                          <TableCell className="text-center">
+                          <TableCell className="text-center hidden sm:table-cell">
                             <Badge variant="outline" className={`text-[10px] h-5 px-1 ${
                               quote.status === "DRAFT" ? "border-zinc-500/30 text-zinc-400 bg-zinc-500/10" :
                               quote.status === "SENT" ? "border-blue-500/30 text-blue-400 bg-blue-500/10" :

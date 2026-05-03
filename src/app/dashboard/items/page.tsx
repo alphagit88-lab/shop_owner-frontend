@@ -349,15 +349,17 @@ export default function ItemsPage() {
                     ) : (
                       items.map((item) => (
                         <TableRow key={item.id} className="border-zinc-800/50 hover:bg-white/5 transition-colors">
-                          <TableCell>
-                            <div className="flex flex-col gap-1">
+                          <TableCell className="max-w-[150px] md:max-w-none">
+                            <div className="flex flex-col gap-0.5">
                               <div className="flex items-center gap-2">
                                 <span className="font-medium text-white text-sm">{item.itemCode || "NO CODE"}</span>
-                                <Badge variant="outline" className={`sm:hidden text-[9px] h-4 px-1 ${item.isAvailable ? "border-emerald-500/30 text-emerald-500 bg-emerald-500/10" : "border-red-500/30 text-red-500 bg-red-500/10"}`}>
-                                  {item.isAvailable ? "In" : "Out"}
-                                </Badge>
+                                <span className={`sm:hidden text-[8px] font-bold px-1 rounded-full border ${item.isAvailable ? "border-emerald-500/30 text-emerald-500 bg-emerald-500/10" : "border-red-500/30 text-red-500 bg-red-500/10"}`}>
+                                  {item.isAvailable ? "IN" : "OUT"}
+                                </span>
                               </div>
-                              <span className="text-[11px] text-zinc-500 truncate max-w-[120px] md:max-w-[250px]">{item.itemDescription}</span>
+                              <span className="text-[10px] text-zinc-500 line-clamp-1 md:line-clamp-none whitespace-normal">
+                                {item.itemDescription}
+                              </span>
                             </div>
                           </TableCell>
                           <TableCell className="text-right text-emerald-400 font-semibold text-sm whitespace-nowrap">
@@ -365,7 +367,7 @@ export default function ItemsPage() {
                           </TableCell>
                           <TableCell className="hidden sm:table-cell text-center">
                             <Badge variant="outline" className={`text-[10px] h-5 px-1.5 ${item.isAvailable ? "border-emerald-500/30 text-emerald-500 bg-emerald-500/10" : "border-red-500/30 text-red-500 bg-red-500/10"}`}>
-                              {item.isAvailable ? "Stock" : "Sold"}
+                              {item.isAvailable ? "AVAILABLE" : "SOLD OUT"}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right">

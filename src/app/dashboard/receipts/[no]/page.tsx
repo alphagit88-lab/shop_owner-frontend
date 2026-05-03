@@ -132,15 +132,15 @@ export default function ReceiptDetailPage() {
         </div>
 
         {/* Action Buttons - Mobile */}
-        <div className="flex sm:hidden gap-2 print:hidden justify-end">
-          <Button variant="outline" onClick={handlePrint} className="flex-1 border-zinc-700 bg-black/40 text-white text-xs h-9">
-            <Printer className="w-3.5 h-3.5 mr-1.5" /> Print
+        <div className="flex sm:hidden grid grid-cols-3 gap-2 print:hidden w-full">
+          <Button variant="outline" onClick={handlePrint} className="flex-1 border-zinc-700 bg-black/40 text-white text-[10px] h-9 px-1">
+            <Printer className="w-3 h-3 mr-1" /> Print
           </Button>
-          <Button variant="outline" onClick={handleEmailPdf} className="flex-1 border-zinc-700 bg-black/40 text-white text-xs h-9">
-            <Mail className="w-3.5 h-3.5 mr-1.5" /> Email
+          <Button variant="outline" onClick={handleEmailPdf} className="flex-1 border-zinc-700 bg-black/40 text-white text-[10px] h-9 px-1">
+            <Mail className="w-3 h-3 mr-1" /> Email
           </Button>
-          <Button variant="outline" onClick={handleWhatsAppShare} className="flex-1 border-zinc-700 bg-black/40 text-white text-xs h-9">
-            <MessageCircle className="w-3.5 h-3.5 mr-1.5" /> WhatsApp
+          <Button variant="outline" onClick={handleWhatsAppShare} className="flex-1 border-zinc-700 bg-black/40 text-white text-[10px] h-9 px-1">
+            <MessageCircle className="w-3 h-3 mr-1" /> WhatsApp
           </Button>
         </div>
       </div>
@@ -213,10 +213,12 @@ export default function ReceiptDetailPage() {
                   <TableBody>
                     {receipt.details?.map((item: any) => (
                       <TableRow key={item.id} className="border-zinc-800/50 print:border-gray-200">
-                        <TableCell>
+                        <TableCell className="min-w-[120px]">
                           <div className="flex flex-col">
                             <span className="font-medium text-white text-sm">{item.itemCode || "-"}</span>
-                            <span className="text-[10px] text-zinc-500 truncate max-w-[150px] md:max-w-[300px]">{item.itemDescription}</span>
+                            <span className="text-[10px] text-zinc-500 line-clamp-2 md:line-clamp-none whitespace-normal max-w-[150px] md:max-w-[400px]">
+                              {item.itemDescription}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell className="text-right text-zinc-300 text-sm whitespace-nowrap">{item.quantity}</TableCell>

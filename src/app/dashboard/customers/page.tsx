@@ -200,14 +200,14 @@ export default function CustomersPage() {
                           <TableCell>
                             <div className="space-y-1">
                               {customer.email && (
-                                <div className="flex items-center text-zinc-400 text-xs">
-                                  <Mail className="w-3 h-3 mr-2 text-zinc-500" />
-                                  <span className="truncate max-w-[150px]">{customer.email}</span>
+                                <div className="flex items-center text-zinc-400 text-[10px] md:text-xs">
+                                  <Mail className="w-3 h-3 mr-1.5 text-zinc-500 hidden sm:block" />
+                                  <span className="truncate max-w-[100px] md:max-w-[200px]">{customer.email}</span>
                                 </div>
                               )}
                               {customer.phoneNumber && (
-                                <div className="flex items-center text-zinc-400 text-xs">
-                                  <Phone className="w-3 h-3 mr-2 text-zinc-500" />
+                                <div className="flex items-center text-zinc-400 text-[10px] md:text-xs">
+                                  <Phone className="w-3 h-3 mr-1.5 text-zinc-500 hidden sm:block" />
                                   {customer.phoneNumber}
                                 </div>
                               )}
