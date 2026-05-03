@@ -98,16 +98,17 @@ export default function QuotationsPage() {
 
       <Card className="bg-white/5 border-zinc-800/50 backdrop-blur-sm">
         <CardContent className="p-0 md:p-6">
-          <div className="overflow-x-auto">
-            <div className="inline-block min-w-full align-middle px-4 md:px-0 pt-4 md:pt-0">
-              <div className="rounded-xl border border-zinc-800/50 overflow-hidden mb-4 md:mb-0">
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
+            <div className="inline-block min-w-full align-middle">
+              <div className="rounded-xl border border-zinc-800/50 overflow-hidden">
                 <Table>
                   <TableHeader className="bg-zinc-900/50">
                     <TableRow className="border-zinc-800/50 hover:bg-transparent">
                       <TableHead className="text-zinc-400">ID & Date</TableHead>
                       <TableHead className="text-zinc-400">Customer</TableHead>
                       <TableHead className="text-zinc-400 text-right">Amount</TableHead>
-                      <TableHead className="text-zinc-400 text-center hidden sm:table-cell">Status</TableHead>
+                      <TableHead className="text-zinc-400 text-center">Status</TableHead>
                       <TableHead className="text-zinc-400 text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -129,28 +130,19 @@ export default function QuotationsPage() {
                                 <FileText className="w-3.5 h-3.5 text-zinc-500" />
                                 Q-{quote.quotationNo.toString().padStart(5, '0')}
                               </div>
-                              <div className="flex items-center gap-1.5 ml-5">
-                                <span className="text-[10px] text-zinc-500">
-                                  {new Date(quote.quotationDate).toLocaleDateString()}
-                                </span>
-                                <span className={`sm:hidden text-[8px] font-bold px-1 rounded-full border ${
-                                  quote.status === "DRAFT" ? "border-zinc-500/30 text-zinc-400 bg-zinc-500/10" :
-                                  quote.status === "SENT" ? "border-blue-500/30 text-blue-400 bg-blue-500/10" :
-                                  "border-emerald-500/30 text-emerald-500 bg-emerald-500/10"
-                                }`}>
-                                  {quote.status}
-                                </span>
-                              </div>
+                              <span className="text-[10px] text-zinc-500 ml-5">
+                                {new Date(quote.quotationDate).toLocaleDateString()}
+                              </span>
                             </div>
                           </TableCell>
-                          <TableCell className="text-white font-medium text-sm truncate max-w-[100px] sm:max-w-none">
+                          <TableCell className="text-white font-medium text-sm">
                             {quote.customerName}
                           </TableCell>
                           <TableCell className="text-right text-emerald-400 font-bold text-sm whitespace-nowrap">
                             {formatCurrency(quote.totalLkr, 'LKR')}
                           </TableCell>
-                          <TableCell className="text-center hidden sm:table-cell">
-                            <Badge variant="outline" className={`text-[10px] h-5 px-1 ${
+                          <TableCell className="text-center">
+                            <Badge variant="outline" className={`text-[10px] h-5 px-2 ${
                               quote.status === "DRAFT" ? "border-zinc-500/30 text-zinc-400 bg-zinc-500/10" :
                               quote.status === "SENT" ? "border-blue-500/30 text-blue-400 bg-blue-500/10" :
                               "border-emerald-500/30 text-emerald-500 bg-emerald-500/10"
@@ -159,32 +151,32 @@ export default function QuotationsPage() {
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right">
-                            <div className="flex justify-end gap-1 md:gap-2">
+                            <div className="flex justify-end gap-2">
                               {quote.status !== "CONVERTED" && (
                                 <Button 
                                   variant="ghost" 
                                   size="icon" 
-                                  className="h-7 w-7 text-zinc-400 hover:text-blue-400"
+                                  className="h-8 w-8 text-zinc-400 hover:text-blue-400"
                                   onClick={() => router.push(`/dashboard/quotations/new?edit=${quote.quotationNo}`)}
                                 >
-                                  <Edit className="w-3.5 h-3.5" />
+                                  <Edit className="w-4 h-4" />
                                 </Button>
                               )}
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
-                                className="h-7 w-7 text-zinc-400 hover:text-white"
+                                className="h-8 w-8 text-zinc-400 hover:text-white"
                                 onClick={() => router.push(`/dashboard/quotations/${quote.quotationNo}`)}
                               >
-                                <Eye className="w-3.5 h-3.5" />
+                                <Eye className="w-4 h-4" />
                               </Button>
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
-                                className="h-7 w-7 text-zinc-400 hover:text-emerald-400"
+                                className="h-8 w-8 text-zinc-400 hover:text-emerald-400"
                                 onClick={() => handleConvertToReceipt(quote.quotationNo)}
                               >
-                                <CheckCircle className="w-3.5 h-3.5" />
+                                <CheckCircle className="w-4 h-4" />
                               </Button>
                             </div>
                           </TableCell>
@@ -195,6 +187,80 @@ export default function QuotationsPage() {
                 </Table>
               </div>
             </div>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4 p-4">
+            {loading ? (
+              <div className="text-center py-8 text-zinc-500">Loading...</div>
+            ) : quotations.length === 0 ? (
+              <div className="text-center py-8 text-zinc-500">No quotations found</div>
+            ) : (
+              quotations.map((quote) => (
+                <div key={quote.quotationNo} className="bg-white/5 border border-zinc-800/50 rounded-xl p-4 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-white font-bold">
+                        <FileText className="w-4 h-4 text-blue-500" />
+                        Q-{quote.quotationNo.toString().padStart(5, '0')}
+                      </div>
+                      <div className="text-[10px] text-zinc-500 uppercase tracking-wider">
+                        {new Date(quote.quotationDate).toLocaleDateString(undefined, { dateStyle: 'long' })}
+                      </div>
+                    </div>
+                    <Badge variant="outline" className={`text-[9px] h-5 px-1.5 ${
+                      quote.status === "DRAFT" ? "border-zinc-500/30 text-zinc-400 bg-zinc-500/10" :
+                      quote.status === "SENT" ? "border-blue-500/30 text-blue-400 bg-blue-500/10" :
+                      "border-emerald-500/30 text-emerald-500 bg-emerald-500/10"
+                    }`}>
+                      {quote.status}
+                    </Badge>
+                  </div>
+
+                  <div className="flex justify-between items-end border-t border-white/5 pt-3">
+                    <div className="space-y-0.5">
+                      <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Customer</p>
+                      <p className="text-white font-medium text-sm">{quote.customerName}</p>
+                    </div>
+                    <div className="text-right space-y-0.5">
+                      <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Amount</p>
+                      <p className="text-emerald-400 font-bold">{formatCurrency(quote.totalLkr, 'LKR')}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 pt-2 border-t border-white/5">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 bg-black/40 border-zinc-800 text-zinc-400 hover:text-white text-[10px] h-8"
+                      onClick={() => router.push(`/dashboard/quotations/${quote.quotationNo}`)}
+                    >
+                      <Eye className="w-3 h-3 mr-1.5" /> View
+                    </Button>
+                    {quote.status !== "CONVERTED" && (
+                      <>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1 bg-black/40 border-zinc-800 text-zinc-400 hover:text-blue-400 text-[10px] h-8"
+                          onClick={() => router.push(`/dashboard/quotations/new?edit=${quote.quotationNo}`)}
+                        >
+                          <Edit className="w-3 h-3 mr-1.5" /> Edit
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1 bg-black/40 border-zinc-800 text-zinc-400 hover:text-emerald-400 text-[10px] h-8"
+                          onClick={() => handleConvertToReceipt(quote.quotationNo)}
+                        >
+                          <CheckCircle className="w-3 h-3 mr-1.5" /> Convert
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>

@@ -112,10 +112,10 @@ export default function QuotationDetailPage() {
         </div>
 
         {/* Action Buttons - Mobile */}
-        <div className="flex sm:hidden gap-2 print:hidden">
+        <div className="flex sm:hidden gap-2 print:hidden w-full">
           {quotation.status !== "CONVERTED" && (
-            <Button onClick={handleConvertToReceipt} className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs h-9">
-              <CheckCircle className="w-3.5 h-3.5 mr-1.5" /> Convert to Receipt
+            <Button onClick={handleConvertToReceipt} className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-[10px] h-9 px-2">
+              <CheckCircle className="w-3.5 h-3.5 mr-1.5" /> Convert
             </Button>
           )}
           <DropdownMenu>
@@ -177,9 +177,9 @@ export default function QuotationDetailPage() {
                   {formatCurrency(quotation.totalLkr, 'LKR')}
                 </p>
               </div>
-              <div className="text-right">
-                <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Items</p>
-                <p className="text-white font-medium">{quotation.details?.length || 0} Line Items</p>
+              <div className="text-right shrink-0">
+                <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Line Items</p>
+                <p className="text-white font-medium text-sm">{quotation.details?.length || 0}</p>
               </div>
             </div>
           </CardContent>
@@ -206,10 +206,12 @@ export default function QuotationDetailPage() {
                   <TableBody>
                     {quotation.details?.map((item: any) => (
                       <TableRow key={item.id} className="border-zinc-800/50 print:border-gray-200">
-                        <TableCell>
+                        <TableCell className="min-w-[120px]">
                           <div className="flex flex-col">
                             <span className="font-medium text-white text-sm">{item.itemCode || "-"}</span>
-                            <span className="text-[10px] text-zinc-500 truncate max-w-[150px] md:max-w-[300px]">{item.itemDescription}</span>
+                            <span className="text-[10px] text-zinc-500 line-clamp-2 md:line-clamp-none whitespace-normal max-w-[150px] md:max-w-[400px]">
+                              {item.itemDescription}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell className="text-right text-zinc-300 text-sm whitespace-nowrap">{item.quantity}</TableCell>

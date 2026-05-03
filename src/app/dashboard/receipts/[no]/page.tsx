@@ -6,7 +6,7 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Mail, Printer, MoreVertical, Receipt as ReceiptIcon, MessageCircle } from "lucide-react";
+import { ArrowLeft, Mail, Printer, MoreVertical, Receipt as ReceiptIcon, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { useSettings } from "@/lib/settings-context";
 import { formatCurrency } from "@/lib/format";
@@ -127,20 +127,20 @@ export default function ReceiptDetailPage() {
             <Mail className="w-4 h-4 mr-2" /> Email PDF
           </Button>
           <Button variant="outline" onClick={handleWhatsAppShare} className="border-zinc-700 bg-black/40 text-white hover:bg-emerald-400/10 hover:text-emerald-400">
-            <MessageCircle className="w-4 h-4 mr-2" /> WhatsApp
+            <Share2 className="w-4 h-4 mr-2" /> WhatsApp
           </Button>
         </div>
 
         {/* Action Buttons - Mobile */}
-        <div className="flex sm:hidden grid grid-cols-3 gap-2 print:hidden w-full">
-          <Button variant="outline" onClick={handlePrint} className="flex-1 border-zinc-700 bg-black/40 text-white text-[10px] h-9 px-1">
+        <div className="flex sm:hidden grid grid-cols-3 gap-1.5 print:hidden w-full">
+          <Button variant="outline" onClick={handlePrint} className="flex-1 border-zinc-700 bg-black/40 text-white text-[9px] h-9 px-0.5">
             <Printer className="w-3 h-3 mr-1" /> Print
           </Button>
-          <Button variant="outline" onClick={handleEmailPdf} className="flex-1 border-zinc-700 bg-black/40 text-white text-[10px] h-9 px-1">
+          <Button variant="outline" onClick={handleEmailPdf} className="flex-1 border-zinc-700 bg-black/40 text-white text-[9px] h-9 px-0.5">
             <Mail className="w-3 h-3 mr-1" /> Email
           </Button>
-          <Button variant="outline" onClick={handleWhatsAppShare} className="flex-1 border-zinc-700 bg-black/40 text-white text-[10px] h-9 px-1">
-            <MessageCircle className="w-3 h-3 mr-1" /> WhatsApp
+          <Button variant="outline" onClick={handleWhatsAppShare} className="flex-1 border-zinc-700 bg-black/40 text-white text-[9px] h-9 px-0.5">
+            <Share2 className="w-3 h-3 mr-1" /> WhatsApp
           </Button>
         </div>
       </div>
@@ -186,7 +186,7 @@ export default function ReceiptDetailPage() {
             </div>
             {receipt.quotationNo && (
               <div className="pt-2 border-t border-zinc-800/50">
-                <p className="text-[10px] text-zinc-500">Linked to Quotation Q-{receipt.quotationNo.toString().padStart(5, '0')}</p>
+                <p className="text-[10px] text-zinc-500">Linked to Q-{receipt.quotationNo.toString().padStart(5, '0')}</p>
               </div>
             )}
           </CardContent>
