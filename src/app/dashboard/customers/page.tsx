@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Search, Plus, Mail, Phone, Calendar } from "lucide-react";
+import { Search, Plus, Mail, Phone, Calendar, Edit, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface Customer {
@@ -24,6 +24,7 @@ export default function CustomersPage() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   
   const [formData, setFormData] = useState({
     customerName: "",
@@ -51,15 +52,42 @@ export default function CustomersPage() {
   }, [search]);
 
   const handleOpenDialog = () => {
+    setEditingCustomer(null);
     setFormData({ customerName: "", phoneNumber: "", email: "" });
     setIsDialogOpen(true);
+  };
+
+  const handleEditCustomer = (customer: Customer) => {
+    setEditingCustomer(customer);
+    setFormData({
+      customerName: customer.customerName,
+      phoneNumber: customer.phoneNumber || "",
+      email: customer.email || "",
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleDeleteCustomer = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this customer?")) return;
+    try {
+      await api.delete(`/customers/${id}`);
+      toast.success("Customer deleted successfully");
+      fetchCustomers();
+    } catch (error) {
+      toast.error("Failed to delete customer");
+    }
   };
 
   const handleSaveCustomer = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post("/customers", formData);
-      toast.success("Customer added successfully");
+      if (editingCustomer) {
+        await api.put(`/customers/${editingCustomer.id}`, formData);
+        toast.success("Customer updated successfully");
+      } else {
+        await api.post("/customers", formData);
+        toast.success("Customer added successfully");
+      }
       setIsDialogOpen(false);
       fetchCustomers();
     } catch (error) {
@@ -83,7 +111,7 @@ export default function CustomersPage() {
           } />
           <DialogContent className="bg-zinc-950 border border-zinc-800 text-white sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Add New Customer</DialogTitle>
+              <DialogTitle>{editingCustomer ? "Edit Customer" : "Add New Customer"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSaveCustomer} className="space-y-4 pt-4">
               <div className="space-y-2">
@@ -123,7 +151,7 @@ export default function CustomersPage() {
                   Cancel
                 </Button>
                 <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">
-                  Create Customer
+                  {editingCustomer ? "Update Customer" : "Create Customer"}
                 </Button>
               </div>
             </form>
@@ -153,16 +181,17 @@ export default function CustomersPage() {
                       <TableHead className="text-zinc-400">Name</TableHead>
                       <TableHead className="text-zinc-400">Contact</TableHead>
                       <TableHead className="text-zinc-400">Added</TableHead>
+                      <TableHead className="text-zinc-400 text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loading ? (
                       <TableRow className="border-zinc-800/50">
-                        <TableCell colSpan={3} className="text-center py-8 text-zinc-500">Loading...</TableCell>
+                        <TableCell colSpan={4} className="text-center py-8 text-zinc-500">Loading...</TableCell>
                       </TableRow>
                     ) : customers.length === 0 ? (
                       <TableRow className="border-zinc-800/50">
-                        <TableCell colSpan={3} className="text-center py-8 text-zinc-500">No customers found</TableCell>
+                        <TableCell colSpan={4} className="text-center py-8 text-zinc-500">No customers found</TableCell>
                       </TableRow>
                     ) : (
                       customers.map((customer) => (
@@ -186,6 +215,26 @@ export default function CustomersPage() {
                           </TableCell>
                           <TableCell className="text-zinc-400 text-xs whitespace-nowrap">
                             {new Date(customer.createdAt).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-8 w-8 p-0 text-zinc-400 hover:text-white"
+                                onClick={() => handleEditCustomer(customer)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-8 w-8 p-0 text-zinc-400 hover:text-red-400"
+                                onClick={() => handleDeleteCustomer(customer.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))
