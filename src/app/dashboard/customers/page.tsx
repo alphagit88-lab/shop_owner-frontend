@@ -77,7 +77,7 @@ export default function CustomersPage() {
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger render={
-            <Button onClick={handleOpenDialog} className="bg-amber-500 hover:bg-amber-600 text-black font-semibold">
+            <Button onClick={handleOpenDialog} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">
               <Plus className="w-4 h-4 mr-2" /> Add Customer
             </Button>
           } />
@@ -94,7 +94,7 @@ export default function CustomersPage() {
                   value={formData.customerName}
                   onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
                   placeholder="e.g. John Doe"
-                  className="bg-white/5 border-zinc-800 focus:ring-amber-500/50"
+                  className="bg-white/5 border-zinc-800 focus:ring-blue-500/50"
                 />
               </div>
               <div className="space-y-2">
@@ -104,7 +104,7 @@ export default function CustomersPage() {
                   value={formData.phoneNumber}
                   onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
                   placeholder="e.g. +1 234 567 8900"
-                  className="bg-white/5 border-zinc-800 focus:ring-amber-500/50"
+                  className="bg-white/5 border-zinc-800 focus:ring-blue-500/50"
                 />
               </div>
               <div className="space-y-2">
@@ -115,14 +115,14 @@ export default function CustomersPage() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="e.g. john@example.com"
-                  className="bg-white/5 border-zinc-800 focus:ring-amber-500/50"
+                  className="bg-white/5 border-zinc-800 focus:ring-blue-500/50"
                 />
               </div>
               <div className="pt-4 flex justify-end gap-2">
                 <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)} className="hover:bg-white/10 hover:text-white">
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold">
+                <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">
                   Create Customer
                 </Button>
               </div>
@@ -139,7 +139,7 @@ export default function CustomersPage() {
               placeholder="Search by name, email or phone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 bg-black/40 border-zinc-800 text-white focus:ring-amber-500/50"
+              className="pl-9 bg-black/40 border-zinc-800 text-white focus:ring-blue-500/50"
             />
           </div>
         </CardHeader>
@@ -202,3 +202,4 @@ export default function CustomersPage() {
     </div>
   );
 }
+

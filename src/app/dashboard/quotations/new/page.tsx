@@ -319,7 +319,7 @@ export default function NewQuotationPage() {
                             <p className="text-zinc-500 mb-4">No customer found.</p>
                             <Button 
                               variant="outline" 
-                              className="w-full border-amber-500/50 text-amber-500 hover:bg-amber-500/10"
+                              className="w-full border-blue-500/50 text-blue-500 hover:bg-blue-500/10"
                               onClick={() => {
                                 setCustomerOpen(false);
                                 setIsNewCustomerOpen(true);
@@ -344,7 +344,7 @@ export default function NewQuotationPage() {
                               <Check
                                 className={cn(
                                   "mr-2 h-4 w-4",
-                                  selectedCustomerId === c.id.toString() ? "opacity-100 text-amber-500" : "opacity-0"
+                                  selectedCustomerId === c.id.toString() ? "opacity-100 text-blue-500" : "opacity-0"
                                 )}
                               />
                               <div className="flex flex-col">
@@ -358,7 +358,7 @@ export default function NewQuotationPage() {
                     </Command>
                   </PopoverContent>
                 </Popover>
-                {customers.length === 0 && <p className="text-xs text-amber-500">No customers found. Create one first.</p>}
+                {customers.length === 0 && <p className="text-xs text-blue-500">No customers found. Create one first.</p>}
               </div>
 
               <div className="space-y-2">
@@ -374,16 +374,16 @@ export default function NewQuotationPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-amber-500/10 to-transparent border-amber-500/20 backdrop-blur-sm">
+          <Card className="bg-gradient-to-br from-blue-500/10 to-transparent border-blue-500/20 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-lg text-amber-500">Summary</CardTitle>
+              <CardTitle className="text-lg text-blue-500">Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center text-zinc-300">
                 <span>Total Items:</span>
                 <span className="font-medium text-white">{lineItems.length}</span>
               </div>
-              <div className="pt-4 border-t border-amber-500/20">
+              <div className="pt-4 border-t border-blue-500/20">
                 <div className="flex justify-between items-end">
                   <span className="text-sm text-zinc-400">Total ({settings.currency})</span>
                   <span className="text-3xl font-bold text-white">{formatCurrency(settings.currency === 'LKR' ? totals.lkr : totals.usd, settings.currency)}</span>
@@ -393,7 +393,7 @@ export default function NewQuotationPage() {
               <Button 
                 onClick={handleSaveQuotation}
                 disabled={loading}
-                className="w-full mt-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-semibold h-12 shadow-lg shadow-amber-500/20"
+                className="w-full mt-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white font-semibold h-12 shadow-lg shadow-blue-500/20"
               >
                 <Save className="w-5 h-5 mr-2" />
                 {loading ? "Saving..." : editQuotationNo ? "Update Quotation" : "Save & Generate Quote"}
@@ -415,7 +415,7 @@ export default function NewQuotationPage() {
                     setTimeout(() => setItemSelectKey(prev => prev + 1), 50);
                   }
                 }}>
-                  <SelectTrigger className="w-[180px] bg-amber-500/10 border-amber-500/20 text-white hover:bg-amber-500/20 transition-colors">
+                  <SelectTrigger className="w-[180px] bg-blue-500/10 border-blue-500/20 text-white hover:bg-blue-500/20 transition-colors">
                     <SelectValue placeholder="Add Inventory Item" />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-950 border-zinc-800 text-white">
@@ -550,7 +550,7 @@ export default function NewQuotationPage() {
             <Button variant="outline" onClick={() => setIsNewCustomerOpen(false)} className="border-zinc-800 text-white hover:bg-zinc-800">
               Cancel
             </Button>
-            <Button onClick={handleCreateCustomer} disabled={loading} className="bg-amber-500 text-black hover:bg-amber-600">
+            <Button onClick={handleCreateCustomer} disabled={loading} className="bg-blue-500 text-white hover:bg-blue-600">
               {loading ? "Creating..." : "Create Customer"}
             </Button>
           </DialogFooter>
@@ -559,3 +559,4 @@ export default function NewQuotationPage() {
     </div>
   );
 }
+

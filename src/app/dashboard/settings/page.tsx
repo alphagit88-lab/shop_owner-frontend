@@ -30,7 +30,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <RefreshCcw className="w-8 h-8 text-amber-500 animate-spin" />
+        <RefreshCcw className="w-8 h-8 text-blue-500 animate-spin" />
       </div>
     );
   }
@@ -38,8 +38,8 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500 max-w-4xl mx-auto">
       <div className="flex items-center gap-4">
-        <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20">
-          <Settings className="w-6 h-6 text-amber-500" />
+        <div className="p-3 rounded-2xl bg-blue-500/10 border border-blue-500/20">
+          <Settings className="w-6 h-6 text-blue-500" />
         </div>
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-white">System Settings</h2>
@@ -68,8 +68,8 @@ export default function SettingsPage() {
                     <SelectItem value="GBP">British Pound (GBP)</SelectItem>
                   </SelectContent>
                 </Select>
-                <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/10 flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/10 flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                   <p className="text-sm text-zinc-400">
                     Currently set to <span className="text-white font-bold">{currency}</span>. This affects all price displays across the dashboard.
                   </p>
@@ -81,7 +81,7 @@ export default function SettingsPage() {
               <Button 
                 onClick={handleSave} 
                 disabled={saving}
-                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-semibold px-8"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white font-semibold px-8"
               >
                 {saving ? "Saving..." : (
                   <>
@@ -97,3 +97,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+

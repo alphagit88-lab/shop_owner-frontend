@@ -83,7 +83,7 @@ export default function ReceiptDetailPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 print:grid-cols-2">
         <Card className="bg-white/5 border-zinc-800/50 backdrop-blur-sm print:bg-white print:border-gray-200">
           <CardHeader>
-            <CardTitle className="text-lg text-white print:text-black">Customer Details</CardTitle>
+            <CardTitle className="text-lg text-white print:text-white">Customer Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-zinc-300 print:text-gray-800">
             <p><strong className="text-zinc-400 print:text-gray-500">Name:</strong> {receipt.customerName}</p>
@@ -97,12 +97,12 @@ export default function ReceiptDetailPage() {
         </Card>
         <Card className="bg-white/5 border-zinc-800/50 backdrop-blur-sm print:bg-white print:border-gray-200">
           <CardHeader>
-            <CardTitle className="text-lg text-white print:text-black">Payment Details</CardTitle>
+            <CardTitle className="text-lg text-white print:text-white">Payment Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-zinc-300 print:text-gray-800">
             <div className="flex justify-between border-b border-zinc-800/50 print:border-gray-200 pb-2">
               <span className="text-zinc-400 print:text-gray-500">Method:</span>
-              <span className="font-medium text-white print:text-black">{receipt.paymentMethod || "Cash"}</span>
+              <span className="font-medium text-white print:text-white">{receipt.paymentMethod || "Cash"}</span>
             </div>
             <div className="flex justify-between border-b border-zinc-800/50 print:border-gray-200 py-2">
               <span className="text-zinc-400 print:text-gray-500">Ref Quotation:</span>
@@ -114,7 +114,7 @@ export default function ReceiptDetailPage() {
 
       <Card className="bg-white/5 border-zinc-800/50 backdrop-blur-sm print:bg-white print:border-gray-200">
         <CardHeader>
-          <CardTitle className="text-lg text-white print:text-black">Line Items</CardTitle>
+          <CardTitle className="text-lg text-white print:text-white">Line Items</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border border-zinc-800/50 print:border-gray-300 overflow-hidden">
@@ -131,7 +131,7 @@ export default function ReceiptDetailPage() {
               <TableBody>
                 {receipt.details?.map((item: any) => (
                   <TableRow key={item.id} className="border-zinc-800/50 print:border-gray-200">
-                    <TableCell className="font-medium text-white print:text-black">{item.itemCode || "-"}</TableCell>
+                    <TableCell className="font-medium text-white print:text-white">{item.itemCode || "-"}</TableCell>
                     <TableCell className="text-zinc-300 print:text-gray-800">{item.itemDescription}</TableCell>
                     <TableCell className="text-right text-zinc-300 print:text-gray-800">{item.quantity}</TableCell>
                     <TableCell className="text-right text-zinc-400 print:text-gray-500">{item.discountPct}%</TableCell>
@@ -141,7 +141,7 @@ export default function ReceiptDetailPage() {
                   </TableRow>
                 ))}
                 <TableRow className="border-t-2 border-zinc-700 print:border-gray-400 bg-zinc-900/30 print:bg-gray-50">
-                  <TableCell colSpan={4} className="text-right font-bold text-white print:text-black">TOTAL PAID ({settings.currency}):</TableCell>
+                  <TableCell colSpan={4} className="text-right font-bold text-white print:text-white">TOTAL PAID ({settings.currency}):</TableCell>
                   <TableCell className="text-right font-bold text-emerald-400 print:text-emerald-700 text-lg">
                     {formatCurrency(settings.currency === 'LKR' ? receipt.totalPaidLkr : receipt.totalPaidUsd, settings.currency)}
                   </TableCell>

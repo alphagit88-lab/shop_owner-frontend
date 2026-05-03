@@ -7,7 +7,7 @@ import { SettingsProvider } from "@/lib/settings-context";
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
 export const metadata: Metadata = {
-  title: "Invoice Dashboard — Admin Dashboard",
+  title: "TitanCore Technologies — Admin Dashboard",
   description: "Jewelry shop admin panel for quotations, receipts and inventory",
 };
 
@@ -24,3 +24,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

@@ -91,7 +91,7 @@ export default function QuotationsPage() {
           <p className="text-zinc-500">Manage price quotes, email PDFs, and convert them to sales receipts.</p>
         </div>
         
-        <Button onClick={() => router.push("/dashboard/quotations/new")} className="bg-amber-500 hover:bg-amber-600 text-black font-semibold">
+        <Button onClick={() => router.push("/dashboard/quotations/new")} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">
           <Plus className="w-4 h-4 mr-2" /> New Quotation
         </Button>
       </div>
@@ -148,7 +148,7 @@ export default function QuotationsPage() {
                             <Button 
                               variant="ghost" 
                               size="icon" 
-                              className="h-8 w-8 text-zinc-400 hover:text-amber-400 hover:bg-amber-400/10"
+                              className="h-8 w-8 text-zinc-400 hover:text-blue-400 hover:bg-blue-400/10"
                               onClick={() => router.push(`/dashboard/quotations/new?edit=${quote.quotationNo}`)}
                               title="Edit Quotation"
                             >
@@ -206,3 +206,4 @@ export default function QuotationsPage() {
     </div>
   );
 }
+

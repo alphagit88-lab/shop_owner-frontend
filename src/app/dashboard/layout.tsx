@@ -13,9 +13,10 @@ import {
   LogOut, 
   Menu, 
   X, 
-  Diamond,
-  Settings
+  Settings,
+  Shield
 } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -43,7 +44,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (loading) return (
     <div className="min-h-screen bg-black flex items-center justify-center">
       <div className="animate-pulse flex flex-col items-center">
-        <Diamond className="w-12 h-12 text-amber-500 animate-bounce" />
+        <Shield className="w-12 h-12 text-blue-500 animate-bounce" />
         <span className="mt-4 text-zinc-500 font-medium">Authenticating...</span>
       </div>
     </div>
@@ -61,10 +62,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         print:hidden
       `}>
         <div className="p-6 flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-amber-500 shadow-lg shadow-amber-500/20">
-            <Diamond className="w-6 h-6 text-black" />
+          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-white/10 border border-white/20 shadow-lg shadow-blue-500/20 overflow-hidden shrink-0">
+            <img src="/logo.png" alt="TitanCore Logo" className="w-full h-full object-contain p-1" />
           </div>
-          {isSidebarOpen && <span className="font-bold text-xl tracking-tight text-white">Invoice Dashboard</span>}
+          {isSidebarOpen && <span className="font-bold text-xl tracking-tight text-white">TitanCore Technologies</span>}
         </div>
 
         <nav className="flex-1 px-4 space-y-2 mt-4">
@@ -77,7 +78,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 className={`
                   flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200
                   ${isActive 
-                    ? "bg-amber-500/10 text-amber-500 border border-amber-500/20" 
+                    ? "bg-blue-500/10 text-blue-500 border border-blue-500/20" 
                     : "text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent"}
                 `}
               >
@@ -128,3 +129,4 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     </div>
   );
 }
+

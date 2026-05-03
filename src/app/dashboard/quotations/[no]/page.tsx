@@ -91,7 +91,7 @@ export default function QuotationDetailPage() {
         </div>
         <div className="flex gap-2 print:hidden">
           {quotation.status !== "CONVERTED" && (
-            <Button variant="outline" onClick={() => router.push(`/dashboard/quotations/new?edit=${quotation.quotationNo}`)} className="border-zinc-700 bg-black/40 text-white hover:bg-amber-400/10 hover:text-amber-400 hover:border-amber-400/50">
+            <Button variant="outline" onClick={() => router.push(`/dashboard/quotations/new?edit=${quotation.quotationNo}`)} className="border-zinc-700 bg-black/40 text-white hover:bg-blue-400/10 hover:text-blue-400 hover:border-blue-400/50">
               <Edit className="w-4 h-4 mr-2" /> Edit
             </Button>
           )}
@@ -102,7 +102,7 @@ export default function QuotationDetailPage() {
             <Mail className="w-4 h-4 mr-2" /> Email PDF
           </Button>
           {quotation.status !== "CONVERTED" && (
-            <Button onClick={handleConvertToReceipt} className="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold">
+            <Button onClick={handleConvertToReceipt} className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold">
               <CheckCircle className="w-4 h-4 mr-2" /> Convert to Receipt
             </Button>
           )}
@@ -112,7 +112,7 @@ export default function QuotationDetailPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 print:grid-cols-2">
         <Card className="bg-white/5 border-zinc-800/50 backdrop-blur-sm print:bg-white print:border-gray-200">
           <CardHeader>
-            <CardTitle className="text-lg text-white print:text-black">Customer Details</CardTitle>
+            <CardTitle className="text-lg text-white print:text-white">Customer Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-zinc-300 print:text-gray-800">
             <p><strong className="text-zinc-400 print:text-gray-500">Customer ID:</strong> <span className="font-mono text-zinc-500">#{quotation.customerId}</span></p>
@@ -127,7 +127,7 @@ export default function QuotationDetailPage() {
         </Card>
         <Card className="bg-white/5 border-zinc-800/50 backdrop-blur-sm print:bg-white print:border-gray-200">
           <CardHeader>
-            <CardTitle className="text-lg text-white print:text-black">Summary</CardTitle>
+            <CardTitle className="text-lg text-white print:text-white">Summary</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-zinc-300 print:text-gray-800">
             <div className="flex justify-between">
@@ -146,7 +146,7 @@ export default function QuotationDetailPage() {
 
       <Card className="bg-white/5 border-zinc-800/50 backdrop-blur-sm print:bg-white print:border-gray-200">
         <CardHeader>
-          <CardTitle className="text-lg text-white print:text-black">Line Items</CardTitle>
+          <CardTitle className="text-lg text-white print:text-white">Line Items</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border border-zinc-800/50 print:border-gray-300 overflow-hidden">
@@ -166,7 +166,7 @@ export default function QuotationDetailPage() {
                   const discUsd = (Number(item.unitPriceUsd) * Number(item.discountPct)) / 100;
                   return (
                     <TableRow key={item.id} className="border-zinc-800/50 print:border-gray-200">
-                      <TableCell className="font-medium text-white print:text-black">{item.itemCode || "-"}</TableCell>
+                      <TableCell className="font-medium text-white print:text-white">{item.itemCode || "-"}</TableCell>
                       <TableCell className="text-zinc-300 print:text-gray-800">{item.itemDescription}</TableCell>
                       <TableCell className="text-right text-zinc-300 print:text-gray-800">{item.quantity}</TableCell>
                       <TableCell className="text-right text-zinc-400 print:text-gray-600">
@@ -180,7 +180,7 @@ export default function QuotationDetailPage() {
                   );
                 })}
                 <TableRow className="border-t-2 border-zinc-700 print:border-gray-400 bg-zinc-900/30 print:bg-gray-50">
-                  <TableCell colSpan={5} className="text-right font-bold text-white print:text-black">GRAND TOTAL ({settings.currency}):</TableCell>
+                  <TableCell colSpan={5} className="text-right font-bold text-white print:text-white">GRAND TOTAL ({settings.currency}):</TableCell>
                   <TableCell className="text-right font-bold text-emerald-400 print:text-emerald-700 text-lg">
                     {formatCurrency(settings.currency === 'LKR' ? quotation.totalLkr : quotation.totalUsd, settings.currency)}
                   </TableCell>

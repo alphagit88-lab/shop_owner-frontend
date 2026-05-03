@@ -166,7 +166,7 @@ export default function ItemsPage() {
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger render={
-            <Button onClick={() => handleOpenDialog()} className="bg-amber-500 hover:bg-amber-600 text-black font-semibold">
+            <Button onClick={() => handleOpenDialog()} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">
               <Plus className="w-4 h-4 mr-2" /> Add Item
             </Button>
           } />
@@ -182,7 +182,7 @@ export default function ItemsPage() {
                   value={formData.itemCode}
                   onChange={(e) => setFormData({ ...formData, itemCode: e.target.value })}
                   placeholder="e.g. DM-001"
-                  className="bg-white/5 border-zinc-800 focus:ring-amber-500/50"
+                  className="bg-white/5 border-zinc-800 focus:ring-blue-500/50"
                 />
               </div>
               <div className="space-y-2">
@@ -193,7 +193,7 @@ export default function ItemsPage() {
                   value={formData.itemDescription}
                   onChange={(e) => setFormData({ ...formData, itemDescription: e.target.value })}
                   placeholder="e.g. 1.0ct Round Brilliant Diamond"
-                  className="bg-white/5 border-zinc-800 focus:ring-amber-500/50"
+                  className="bg-white/5 border-zinc-800 focus:ring-blue-500/50"
                 />
               </div>
               <div className="grid grid-cols-1 gap-4">
@@ -211,7 +211,7 @@ export default function ItemsPage() {
                         const lkr = usd ? (Number(usd) * USD_LKR_RATE).toFixed(2) : "";
                         setFormData({ ...formData, unitPriceUsd: usd, unitPriceLkr: lkr });
                       }}
-                      className="bg-white/5 border-zinc-800 focus:ring-amber-500/50"
+                      className="bg-white/5 border-zinc-800 focus:ring-blue-500/50"
                     />
                   </div>
                 ) : (
@@ -228,7 +228,7 @@ export default function ItemsPage() {
                         const usd = lkr ? (Number(lkr) / USD_LKR_RATE).toFixed(2) : "";
                         setFormData({ ...formData, unitPriceLkr: lkr, unitPriceUsd: usd });
                       }}
-                      className="bg-white/5 border-zinc-800 focus:ring-amber-500/50"
+                      className="bg-white/5 border-zinc-800 focus:ring-blue-500/50"
                     />
                   </div>
                 )}
@@ -237,7 +237,7 @@ export default function ItemsPage() {
                 <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)} className="hover:bg-white/10 hover:text-white">
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold">
+                <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">
                   {editingItem ? "Save Changes" : "Create Item"}
                 </Button>
               </div>
@@ -273,7 +273,7 @@ export default function ItemsPage() {
                     onClick={() => setSelectedCustomer(customer)}
                     className={`w-full text-left p-3 rounded-xl border transition-all duration-200 ${
                       selectedCustomer?.id === customer.id
-                        ? "border-amber-500/50 bg-amber-500/10"
+                        ? "border-blue-500/50 bg-blue-500/10"
                         : "border-zinc-800 bg-black/20 hover:bg-white/5 hover:border-zinc-700"
                     }`}
                   >
@@ -314,7 +314,7 @@ export default function ItemsPage() {
               <Button
                 onClick={handleProceedToQuotation}
                 disabled={!selectedCustomer}
-                className="bg-amber-500 hover:bg-amber-600 text-black font-semibold disabled:opacity-40"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:opacity-40"
               >
                 <DollarSign className="w-4 h-4 mr-2" />
                 Proceed to Quotation
@@ -332,7 +332,7 @@ export default function ItemsPage() {
               placeholder="Search by code or description..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 bg-black/40 border-zinc-800 text-white focus:ring-amber-500/50"
+              className="pl-9 bg-black/40 border-zinc-800 text-white focus:ring-blue-500/50"
             />
           </div>
         </CardHeader>
@@ -384,7 +384,7 @@ export default function ItemsPage() {
                           <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="h-8 w-8 text-zinc-400 hover:text-amber-400 hover:bg-amber-400/10"
+                            className="h-8 w-8 text-zinc-400 hover:text-blue-400 hover:bg-blue-400/10"
                             onClick={() => handleOpenDialog(item)}
                           >
                             <Edit className="w-4 h-4" />
@@ -410,3 +410,4 @@ export default function ItemsPage() {
     </div>
   );
 }
+
