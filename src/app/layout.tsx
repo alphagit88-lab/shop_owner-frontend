@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={geist.variable}>
+    <html lang="en" className="dark" style={{ colorScheme: 'dark' }}>
+      <body className={`${geist.variable} bg-[#050505] antialiased min-h-screen`}>
         <AuthProvider>
           <SettingsProvider>
             {children}

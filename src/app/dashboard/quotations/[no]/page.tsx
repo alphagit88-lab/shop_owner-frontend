@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, Printer, CheckCircle, Edit } from "lucide-react";
+import { ArrowLeft, Mail, Printer, CheckCircle, Edit, MoreVertical } from "lucide-react";
 import { toast } from "sonner";
 import { useSettings } from "@/lib/settings-context";
 import { formatCurrency } from "@/lib/format";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function QuotationDetailPage() {
   const { settings } = useSettings();
@@ -69,125 +70,174 @@ export default function QuotationDetailPage() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 max-w-5xl mx-auto">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.push("/dashboard/quotations")} className="text-zinc-400 hover:text-white hover:bg-white/10 print:hidden">
+    <div className="space-y-6 animate-in fade-in duration-500 max-w-5xl mx-auto px-4 md:px-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => router.push("/dashboard/quotations")} className="text-zinc-400 hover:text-white hover:bg-white/10 print:hidden shrink-0">
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-              Quotation Q-{quotation.quotationNo.toString().padStart(5, '0')}
-              <Badge variant="outline" className={
+          <div className="min-w-0">
+            <h2 className="text-xl md:text-2xl font-bold tracking-tight text-white flex flex-wrap items-center gap-2">
+              <span className="truncate">Q-{quotation.quotationNo.toString().padStart(5, '0')}</span>
+              <Badge variant="outline" className={`text-[10px] h-5 px-1.5 ${
                 quotation.status === "DRAFT" ? "border-zinc-500/30 text-zinc-400 bg-zinc-500/10" :
                 quotation.status === "SENT" ? "border-blue-500/30 text-blue-400 bg-blue-500/10" :
                 "border-emerald-500/30 text-emerald-500 bg-emerald-500/10"
-              }>
+              }`}>
                 {quotation.status}
               </Badge>
             </h2>
-            <p className="text-zinc-500">{new Date(quotation.quotationDate).toLocaleDateString()}</p>
+            <p className="text-xs text-zinc-500">{new Date(quotation.quotationDate).toLocaleDateString()}</p>
           </div>
         </div>
-        <div className="flex gap-2 print:hidden">
+
+        {/* Action Buttons - Desktop */}
+        <div className="hidden sm:flex gap-2 print:hidden">
           {quotation.status !== "CONVERTED" && (
-            <Button variant="outline" onClick={() => router.push(`/dashboard/quotations/new?edit=${quotation.quotationNo}`)} className="border-zinc-700 bg-black/40 text-white hover:bg-blue-400/10 hover:text-blue-400 hover:border-blue-400/50">
+            <Button variant="outline" onClick={() => router.push(`/dashboard/quotations/new?edit=${quotation.quotationNo}`)} className="border-zinc-700 bg-black/40 text-white hover:bg-blue-400/10 hover:text-blue-400">
               <Edit className="w-4 h-4 mr-2" /> Edit
             </Button>
           )}
           <Button variant="outline" onClick={handlePrint} className="border-zinc-700 bg-black/40 text-white hover:bg-white/10">
             <Printer className="w-4 h-4 mr-2" /> Print
           </Button>
-          <Button variant="outline" onClick={handleEmailPdf} className="border-zinc-700 bg-black/40 text-white hover:bg-blue-400/10 hover:text-blue-400 hover:border-blue-400/50">
-            <Mail className="w-4 h-4 mr-2" /> Email PDF
+          <Button variant="outline" onClick={handleEmailPdf} className="border-zinc-700 bg-black/40 text-white hover:bg-blue-400/10 hover:text-blue-400">
+            <Mail className="w-4 h-4 mr-2" /> Email
           </Button>
           {quotation.status !== "CONVERTED" && (
             <Button onClick={handleConvertToReceipt} className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold">
-              <CheckCircle className="w-4 h-4 mr-2" /> Convert to Receipt
+              <CheckCircle className="w-4 h-4 mr-2" /> Convert
             </Button>
           )}
+        </div>
+
+        {/* Action Buttons - Mobile */}
+        <div className="flex sm:hidden gap-2 print:hidden">
+          {quotation.status !== "CONVERTED" && (
+            <Button onClick={handleConvertToReceipt} className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs h-9">
+              <CheckCircle className="w-3.5 h-3.5 mr-1.5" /> Convert to Receipt
+            </Button>
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon" className="border-zinc-700 bg-black/40 text-white h-9 w-9">
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-zinc-950 border-zinc-800 text-white">
+              {quotation.status !== "CONVERTED" && (
+                <DropdownMenuItem onClick={() => router.push(`/dashboard/quotations/new?edit=${quotation.quotationNo}`)}>
+                  <Edit className="w-4 h-4 mr-2" /> Edit Quotation
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={handlePrint}>
+                <Printer className="w-4 h-4 mr-2" /> Print PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleEmailPdf}>
+                <Mail className="w-4 h-4 mr-2" /> Email PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 print:grid-cols-2">
         <Card className="bg-white/5 border-zinc-800/50 backdrop-blur-sm print:bg-white print:border-gray-200">
-          <CardHeader>
-            <CardTitle className="text-lg text-white print:text-white">Customer Details</CardTitle>
+          <CardHeader className="py-4">
+            <CardTitle className="text-base text-zinc-400 uppercase tracking-wider font-semibold">Customer Details</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-zinc-300 print:text-gray-800">
-            <p><strong className="text-zinc-400 print:text-gray-500">Customer ID:</strong> <span className="font-mono text-zinc-500">#{quotation.customerId}</span></p>
-            <p><strong className="text-zinc-400 print:text-gray-500">Name:</strong> {quotation.customerName}</p>
-            {quotation.customer && (
-              <>
-                <p><strong className="text-zinc-400 print:text-gray-500">Email:</strong> {quotation.customer.email || "-"}</p>
-                <p><strong className="text-zinc-400 print:text-gray-500">Phone:</strong> {quotation.customer.phoneNumber || "-"}</p>
-              </>
-            )}
+          <CardContent className="space-y-3 text-zinc-300 print:text-gray-800">
+            <div>
+              <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-0.5">Full Name</p>
+              <p className="text-white font-medium">{quotation.customerName}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-0.5">Customer ID</p>
+                <p className="text-zinc-400 font-mono">#{quotation.customerId}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-0.5">Phone</p>
+                <p className="text-zinc-400 truncate">{quotation.customer?.phoneNumber || "-"}</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
         <Card className="bg-white/5 border-zinc-800/50 backdrop-blur-sm print:bg-white print:border-gray-200">
-          <CardHeader>
-            <CardTitle className="text-lg text-white print:text-white">Summary</CardTitle>
+          <CardHeader className="py-4">
+            <CardTitle className="text-base text-zinc-400 uppercase tracking-wider font-semibold">Summary</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-zinc-300 print:text-gray-800">
-            <div className="flex justify-between">
-              <span className="text-zinc-400 print:text-gray-500">Total Items:</span>
-              <span>{quotation.details?.length || 0}</span>
-            </div>
-            {quotation.notes && (
-              <div className="mt-4 pt-4 border-t border-zinc-800/50 print:border-gray-200">
-                <p className="text-sm text-zinc-400 print:text-gray-500">Notes:</p>
-                <p className="text-sm italic">{quotation.notes}</p>
+          <CardContent className="space-y-4 text-zinc-300 print:text-gray-800">
+            <div className="flex justify-between items-end">
+              <div className="space-y-1">
+                <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Grand Total</p>
+                <p className="text-2xl font-bold text-emerald-400">
+                  {formatCurrency(settings.currency === 'LKR' ? quotation.totalLkr : quotation.totalUsd, settings.currency)}
+                </p>
               </div>
-            )}
+              <div className="text-right">
+                <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Items</p>
+                <p className="text-white font-medium">{quotation.details?.length || 0} Line Items</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
 
       <Card className="bg-white/5 border-zinc-800/50 backdrop-blur-sm print:bg-white print:border-gray-200">
-        <CardHeader>
-          <CardTitle className="text-lg text-white print:text-white">Line Items</CardTitle>
+        <CardHeader className="py-4">
+          <CardTitle className="text-base text-zinc-400 uppercase tracking-wider font-semibold">Line Items</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="rounded-md border border-zinc-800/50 print:border-gray-300 overflow-hidden">
-            <Table>
-              <TableHeader className="bg-zinc-900/50 print:bg-gray-100">
-                <TableRow className="border-zinc-800/50 print:border-gray-300">
-                  <TableHead className="text-zinc-400 print:text-gray-600">Code</TableHead>
-                  <TableHead className="text-zinc-400 print:text-gray-600">Description</TableHead>
-                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Qty</TableHead>
-                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Base Price</TableHead>
-                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Disc.</TableHead>
-                  <TableHead className="text-zinc-400 print:text-gray-600 text-right">Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {quotation.details?.map((item: any) => {
-                  const discUsd = (Number(item.unitPriceUsd) * Number(item.discountPct)) / 100;
-                  return (
-                    <TableRow key={item.id} className="border-zinc-800/50 print:border-gray-200">
-                      <TableCell className="font-medium text-white print:text-white">{item.itemCode || "-"}</TableCell>
-                      <TableCell className="text-zinc-300 print:text-gray-800">{item.itemDescription}</TableCell>
-                      <TableCell className="text-right text-zinc-300 print:text-gray-800">{item.quantity}</TableCell>
-                      <TableCell className="text-right text-zinc-400 print:text-gray-600">
-                        {formatCurrency(settings.currency === 'LKR' ? item.unitPriceLkr : item.unitPriceUsd, settings.currency)}
-                      </TableCell>
-                      <TableCell className="text-right text-red-400 print:text-red-600">-{item.discountPct}%</TableCell>
-                      <TableCell className="text-right text-emerald-400 print:text-emerald-700 font-medium">
-                        {formatCurrency(settings.currency === 'LKR' ? item.lineTotalLkr : item.lineTotalUsd, settings.currency)}
-                      </TableCell>
+        <CardContent className="px-0 md:px-6">
+          <div className="overflow-x-auto">
+            <div className="inline-block min-w-full align-middle px-4 md:px-0">
+              <div className="rounded-xl border border-zinc-800/50 print:border-gray-300 overflow-hidden">
+                <Table>
+                  <TableHeader className="bg-zinc-900/50 print:bg-gray-100">
+                    <TableRow className="border-zinc-800/50 print:border-gray-300">
+                      <TableHead className="text-zinc-400 print:text-gray-600">Item</TableHead>
+                      <TableHead className="text-zinc-400 print:text-gray-600 text-right">Qty</TableHead>
+                      <TableHead className="text-zinc-400 print:text-gray-600 text-right">Price</TableHead>
+                      <TableHead className="text-zinc-400 print:text-gray-600 text-right">Total</TableHead>
                     </TableRow>
-                  );
-                })}
-                <TableRow className="border-t-2 border-zinc-700 print:border-gray-400 bg-zinc-900/30 print:bg-gray-50">
-                  <TableCell colSpan={5} className="text-right font-bold text-white print:text-white">GRAND TOTAL ({settings.currency}):</TableCell>
-                  <TableCell className="text-right font-bold text-emerald-400 print:text-emerald-700 text-lg">
-                    {formatCurrency(settings.currency === 'LKR' ? quotation.totalLkr : quotation.totalUsd, settings.currency)}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {quotation.details?.map((item: any) => (
+                      <TableRow key={item.id} className="border-zinc-800/50 print:border-gray-200">
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="font-medium text-white text-sm">{item.itemCode || "-"}</span>
+                            <span className="text-[10px] text-zinc-500 truncate max-w-[150px] md:max-w-[300px]">{item.itemDescription}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right text-zinc-300 text-sm whitespace-nowrap">{item.quantity}</TableCell>
+                        <TableCell className="text-right text-zinc-400 text-sm whitespace-nowrap">
+                          <div className="flex flex-col items-end">
+                            <span>{formatCurrency(settings.currency === 'LKR' ? item.unitPriceLkr : item.unitPriceUsd, settings.currency)}</span>
+                            {Number(item.discountPct) > 0 && (
+                              <span className="text-[10px] text-red-400">-{item.discountPct}%</span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right text-emerald-400 font-bold text-sm whitespace-nowrap">
+                          {formatCurrency(settings.currency === 'LKR' ? item.lineTotalLkr : item.lineTotalUsd, settings.currency)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
           </div>
+
+          {quotation.notes && (
+            <div className="mt-6 px-4 md:px-0">
+              <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-2">Internal Notes</p>
+              <div className="p-4 rounded-xl border border-zinc-800 bg-black/20 text-zinc-400 text-sm italic">
+                {quotation.notes}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

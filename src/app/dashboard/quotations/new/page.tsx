@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, Plus, Trash2, ArrowLeft, Gem, Check, ChevronsUpDown } from "lucide-react";
+import { Save, Plus, Trash2, ArrowLeft, Gem, Check, ChevronsUpDown, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import { useSettings } from "@/lib/settings-context";
 import { formatCurrency } from "@/lib/format";
@@ -52,7 +52,7 @@ export default function NewQuotationPage() {
   const searchParams = useSearchParams();
   const preselectItemId = searchParams.get("item");
   const preselectCustomerId = searchParams.get("customer");
-  const editQuotationNo = searchParams.get("edit"); // Gap 3: editing mode
+  const editQuotationNo = searchParams.get("edit");
 
   const [loading, setLoading] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -80,12 +80,10 @@ export default function NewQuotationPage() {
         const inStockItems = itemsRes.data.filter((i: Item) => i.isAvailable);
         setAvailableItems(inStockItems);
 
-        // Gap 2: Auto-select customer from pricing modal
         if (preselectCustomerId) {
           setSelectedCustomerId(preselectCustomerId);
         }
 
-        // Auto-add item if navigated from Items page
         if (preselectItemId && !editQuotationNo) {
           const item = inStockItems.find((i: Item) => i.id === Number(preselectItemId));
           if (item) {
@@ -93,7 +91,6 @@ export default function NewQuotationPage() {
           }
         }
 
-        // Gap 3: Load existing quotation for editing
         if (editQuotationNo) {
           const quoteRes = await api.get(`/quotations/${editQuotationNo}`);
           const quote = quoteRes.data;
@@ -176,7 +173,6 @@ export default function NewQuotationPage() {
       toast.success("Customer created successfully");
     } catch (error) {
       toast.error("Failed to create customer");
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -253,7 +249,6 @@ export default function NewQuotationPage() {
     try {
       setLoading(true);
       if (editQuotationNo) {
-        // Gap 3: Update existing
         await api.put(`/quotations/${editQuotationNo}`, payload);
         toast.success("Quotation updated successfully!");
       } else {
@@ -269,63 +264,64 @@ export default function NewQuotationPage() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 max-w-6xl mx-auto">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-zinc-400 hover:text-white hover:bg-white/10">
+    <div className="space-y-6 animate-in fade-in duration-500 max-w-6xl mx-auto px-4 md:px-0">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={() => router.back()} className="text-zinc-400 hover:text-white hover:bg-white/10 shrink-0 h-9 w-9">
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">
+          <h2 className="text-xl md:text-2xl font-bold tracking-tight text-white truncate">
             {editQuotationNo ? `Edit Quotation Q-${editQuotationNo.toString().padStart(5, '0')}` : "Pricing & Quotation"}
           </h2>
-          <p className="text-zinc-500">
-            {editQuotationNo ? "Modify this quotation's items, pricing, and discounts." : "Create a new price quote for a customer."}
+          <p className="text-xs text-zinc-500">
+            {editQuotationNo ? "Modify this quotation's items and pricing." : "Create a new price quote for a customer."}
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Left Col - Config */}
-        <div className="md:col-span-1 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Config Col */}
+        <div className="lg:col-span-4 space-y-6 order-2 lg:order-1">
           <Card className="bg-white/5 border-zinc-800/50 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-lg text-white">Quotation Details</CardTitle>
+            <CardHeader className="py-4">
+              <CardTitle className="text-sm font-semibold text-zinc-400 uppercase tracking-widest">Configuration</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="customer" className="text-zinc-300">Select Customer *</Label>
+                <Label htmlFor="customer" className="text-xs text-zinc-300">Customer *</Label>
                 <Popover open={customerOpen} onOpenChange={setCustomerOpen}>
-                  <PopoverTrigger
-                    render={
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={customerOpen}
-                        className="w-full justify-between bg-black/40 border-zinc-800 text-white hover:bg-black/60 hover:text-white"
-                      />
-                    }
-                  >
-                    {selectedCustomerId && customers.find((c) => c.id.toString() === selectedCustomerId)
-                      ? customers.find((c) => c.id.toString() === selectedCustomerId)?.customerName
-                      : "Search by name or phone..."}
+                  <PopoverTrigger render={
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={customerOpen}
+                      className="w-full justify-between bg-black/40 border-zinc-800 text-white hover:bg-black/60 hover:text-white h-10 text-sm"
+                    />
+                  }>
+                    <span className="truncate">
+                      {selectedCustomerId && customers.find((c) => c.id.toString() === selectedCustomerId)
+                        ? customers.find((c) => c.id.toString() === selectedCustomerId)?.customerName
+                        : "Select Customer..."}
+                    </span>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </PopoverTrigger>
-                  <PopoverContent className="w-full p-0 bg-zinc-950 border-zinc-800" align="start">
+                  <PopoverContent className="w-[300px] p-0 bg-zinc-950 border-zinc-800" align="start">
                     <Command className="bg-zinc-950 text-white">
-                      <CommandInput placeholder="Search name or phone..." className="text-white border-b border-zinc-800" />
+                      <CommandInput placeholder="Search name or phone..." className="text-white h-10" />
                       <CommandList>
                         <CommandEmpty>
                           <div className="flex flex-col items-center justify-center p-4">
-                            <p className="text-zinc-500 mb-4">No customer found.</p>
+                            <p className="text-zinc-500 text-sm mb-3">No customer found.</p>
                             <Button 
                               variant="outline" 
+                              size="sm"
                               className="w-full border-blue-500/50 text-blue-500 hover:bg-blue-500/10"
                               onClick={() => {
                                 setCustomerOpen(false);
                                 setIsNewCustomerOpen(true);
                               }}
                             >
-                              <Plus className="w-4 h-4 mr-2" /> Add New Customer
+                              <Plus className="w-3.5 h-3.5 mr-1.5" /> Add New
                             </Button>
                           </div>
                         </CommandEmpty>
@@ -339,7 +335,7 @@ export default function NewQuotationPage() {
                                 setSelectedCustomerId(id === selectedCustomerId ? "" : id);
                                 setCustomerOpen(false);
                               }}
-                              className="text-white hover:bg-zinc-800 aria-selected:bg-zinc-800 cursor-pointer"
+                              className="text-white hover:bg-zinc-800 aria-selected:bg-zinc-800 cursor-pointer text-sm py-2"
                             >
                               <Check
                                 className={cn(
@@ -349,7 +345,7 @@ export default function NewQuotationPage() {
                               />
                               <div className="flex flex-col">
                                 <span>{c.customerName}</span>
-                                {c.phoneNumber && <span className="text-xs text-zinc-500">{c.phoneNumber}</span>}
+                                {c.phoneNumber && <span className="text-[10px] text-zinc-500">{c.phoneNumber}</span>}
                               </div>
                             </CommandItem>
                           ))}
@@ -358,56 +354,59 @@ export default function NewQuotationPage() {
                     </Command>
                   </PopoverContent>
                 </Popover>
-                {customers.length === 0 && <p className="text-xs text-blue-500">No customers found. Create one first.</p>}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="notes" className="text-zinc-300">Notes (Optional)</Label>
+                <Label htmlFor="notes" className="text-xs text-zinc-300">Notes (Optional)</Label>
                 <Textarea
                   id="notes"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Additional details..."
-                  className="bg-black/40 border-zinc-800 text-white min-h-[100px] resize-y"
+                  placeholder="Terms, sizing, or delivery notes..."
+                  className="bg-black/40 border-zinc-800 text-white min-h-[80px] text-sm"
                 />
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-blue-500/10 to-transparent border-blue-500/20 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-lg text-blue-500">Summary</CardTitle>
+            <CardHeader className="py-4">
+              <CardTitle className="text-sm font-semibold text-blue-500 uppercase tracking-widest">Financial Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex justify-between items-center text-zinc-300">
-                <span>Total Items:</span>
-                <span className="font-medium text-white">{lineItems.length}</span>
+              <div className="flex justify-between items-center text-xs text-zinc-400">
+                <span>Items Subtotal:</span>
+                <span className="font-medium text-white">{lineItems.length} items</span>
               </div>
               <div className="pt-4 border-t border-blue-500/20">
-                <div className="flex justify-between items-end">
-                  <span className="text-sm text-zinc-400">Total ({settings.currency})</span>
-                  <span className="text-3xl font-bold text-white">{formatCurrency(settings.currency === 'LKR' ? totals.lkr : totals.usd, settings.currency)}</span>
+                <div className="space-y-1">
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Grand Total ({settings.currency})</p>
+                  <p className="text-3xl font-bold text-white tracking-tight">
+                    {formatCurrency(settings.currency === 'LKR' ? totals.lkr : totals.usd, settings.currency)}
+                  </p>
                 </div>
               </div>
 
               <Button 
                 onClick={handleSaveQuotation}
                 disabled={loading}
-                className="w-full mt-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white font-semibold h-12 shadow-lg shadow-blue-500/20"
+                className="w-full mt-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white font-bold h-11 shadow-lg shadow-blue-500/20"
               >
-                <Save className="w-5 h-5 mr-2" />
-                {loading ? "Saving..." : editQuotationNo ? "Update Quotation" : "Save & Generate Quote"}
+                <Save className="w-4 h-4 mr-2" />
+                {loading ? "Processing..." : editQuotationNo ? "Update" : "Save Quotation"}
               </Button>
             </CardContent>
           </Card>
         </div>
 
-        {/* Right Col - Line Items */}
-        <div className="md:col-span-2">
+        {/* Line Items Col */}
+        <div className="lg:col-span-8 order-1 lg:order-2">
           <Card className="bg-white/5 border-zinc-800/50 backdrop-blur-sm min-h-full">
-            <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-zinc-800/50">
-              <CardTitle className="text-lg text-white">Line Items</CardTitle>
-              <div className="flex gap-2">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800/50">
+              <CardTitle className="text-sm font-semibold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                <ShoppingBag className="w-4 h-4" /> Line Items
+              </CardTitle>
+              <div className="flex gap-2 w-full sm:w-auto">
                 <Select key={`item-select-${itemSelectKey}`} onValueChange={(val) => {
                   if (val) {
                     const item = availableItems.find(i => i.id.toString() === val);
@@ -415,99 +414,91 @@ export default function NewQuotationPage() {
                     setTimeout(() => setItemSelectKey(prev => prev + 1), 50);
                   }
                 }}>
-                  <SelectTrigger className="w-[180px] bg-blue-500/10 border-blue-500/20 text-white hover:bg-blue-500/20 transition-colors">
-                    <SelectValue placeholder="Add Inventory Item" />
+                  <SelectTrigger className="flex-1 sm:w-[180px] bg-blue-500/10 border-blue-500/20 text-white text-xs h-9">
+                    <SelectValue placeholder="Add Item" />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-950 border-zinc-800 text-white">
                     {availableItems.map(item => (
-                      <SelectItem key={item.id} value={item.id.toString()}>{item.itemCode || item.itemDescription}</SelectItem>
+                      <SelectItem key={item.id} value={item.id.toString()} className="text-sm">{item.itemCode}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <Button variant="outline" onClick={() => handleAddLineItem()} className="border-zinc-700 bg-black/40 text-white hover:bg-white/10">
-                  <Plus className="w-4 h-4 mr-2" /> Custom Item
+                <Button variant="outline" size="sm" onClick={() => handleAddLineItem()} className="border-zinc-700 bg-black/40 text-white h-9 px-3 text-xs">
+                  <Plus className="w-3.5 h-3.5 mr-1" /> Custom
                 </Button>
               </div>
             </CardHeader>
             <CardContent className="pt-6">
               {lineItems.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 rounded-full bg-zinc-900 flex items-center justify-center mx-auto mb-4">
-                    <Gem className="w-8 h-8 text-zinc-700" />
-                  </div>
-                  <p className="text-zinc-500">No items added to this quotation yet.</p>
-                  <p className="text-sm text-zinc-600 mt-1">Select an item from inventory or add a custom item.</p>
+                <div className="text-center py-20">
+                  <Gem className="w-12 h-12 text-zinc-800 mx-auto mb-4" />
+                  <p className="text-zinc-500 text-sm">Add items from inventory to begin.</p>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {lineItems.map((li) => (
-                    <div key={li.id} className="p-4 rounded-xl border border-zinc-800 bg-black/20 space-y-4 relative group">
-                      <button 
-                        onClick={() => removeLineItem(li.id)}
-                        className="absolute top-4 right-4 text-zinc-400 hover:text-red-400 transition-colors"
-                        title="Remove Item"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                      
-                      <div className="grid grid-cols-12 gap-4">
-                        <div className="col-span-12 md:col-span-3">
-                          <Label className="text-xs text-zinc-500 uppercase tracking-wider">Item Code</Label>
+                    <div key={li.id} className="group p-4 rounded-xl border border-zinc-800/50 bg-black/20 hover:border-zinc-700 transition-all">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="min-w-0 flex-1 mr-4">
                           <Input 
                             value={li.itemCode} 
+                            placeholder="Item Code"
                             onChange={(e) => updateLineItem(li.id, 'itemCode', e.target.value)}
-                            className="bg-white/5 border-zinc-800 mt-1 text-white"
+                            className="bg-transparent border-none p-0 h-auto text-white font-bold text-base focus-visible:ring-0 placeholder:text-zinc-700"
                           />
-                        </div>
-                        <div className="col-span-12 md:col-span-7">
-                          <Label className="text-xs text-zinc-500 uppercase tracking-wider">Description</Label>
                           <Input 
                             value={li.itemDescription} 
+                            placeholder="Description"
                             onChange={(e) => updateLineItem(li.id, 'itemDescription', e.target.value)}
-                            className="bg-white/5 border-zinc-800 mt-1 text-white"
+                            className="bg-transparent border-none p-0 h-auto text-zinc-500 text-xs focus-visible:ring-0 placeholder:text-zinc-800"
                           />
                         </div>
-                        <div className="col-span-12 md:col-span-2">
-                          <Label className="text-xs text-zinc-500 uppercase tracking-wider">Qty</Label>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => removeLineItem(li.id)}
+                          className="h-8 w-8 text-zinc-600 hover:text-red-400 shrink-0"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-3 border-t border-zinc-800/30">
+                        <div className="space-y-1">
+                          <Label className="text-[10px] text-zinc-500 uppercase font-bold">Qty</Label>
                           <Input 
                             type="number" min="1"
                             value={li.quantity} 
                             onChange={(e) => updateLineItem(li.id, 'quantity', e.target.value)}
-                            className="bg-white/5 border-zinc-800 mt-1 text-white"
+                            className="bg-zinc-900/50 border-zinc-800 h-8 text-sm text-white"
                           />
                         </div>
-                      </div>
-
-                      <div className="grid grid-cols-12 gap-4 items-end bg-zinc-900/50 p-3 rounded-lg border border-zinc-800/50">
-                        {settings.currency !== 'LKR' ? (
-                          <div className="col-span-6 md:col-span-8">
-                            <Label className="text-xs text-zinc-400">Base Price ({settings.currency})</Label>
-                            <Input 
-                              type="number"
-                              value={li.unitPriceUsd} 
-                              onChange={(e) => updateLineItem(li.id, 'unitPriceUsd', e.target.value)}
-                              className="bg-black/50 border-zinc-700 mt-1 text-emerald-400 font-medium"
-                            />
-                          </div>
-                        ) : (
-                          <div className="col-span-6 md:col-span-8">
-                            <Label className="text-xs text-zinc-400">Base Price (LKR)</Label>
-                            <Input 
-                              type="number"
-                              value={li.unitPriceLkr} 
-                              onChange={(e) => updateLineItem(li.id, 'unitPriceLkr', e.target.value)}
-                              className="bg-black/50 border-zinc-700 mt-1 text-emerald-400 font-medium"
-                            />
-                          </div>
-                        )}
-                        <div className="col-span-6 md:col-span-4">
-                          <Label className="text-xs text-zinc-400">Discount (%)</Label>
+                        <div className="space-y-1">
+                          <Label className="text-[10px] text-zinc-500 uppercase font-bold">Price ({settings.currency})</Label>
+                          <Input 
+                            type="number"
+                            value={settings.currency === 'LKR' ? li.unitPriceLkr : li.unitPriceUsd} 
+                            onChange={(e) => updateLineItem(li.id, settings.currency === 'LKR' ? 'unitPriceLkr' : 'unitPriceUsd', e.target.value)}
+                            className="bg-zinc-900/50 border-zinc-800 h-8 text-sm text-emerald-400 font-medium"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[10px] text-zinc-500 uppercase font-bold">Disc %</Label>
                           <Input 
                             type="number"
                             value={li.discountPct} 
                             onChange={(e) => updateLineItem(li.id, 'discountPct', e.target.value)}
-                            className="bg-black/50 border-zinc-700 mt-1 text-red-400 font-bold"
+                            className="bg-zinc-900/50 border-zinc-800 h-8 text-sm text-red-400 font-bold"
                           />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[10px] text-zinc-500 uppercase font-bold text-right block">Subtotal</Label>
+                          <div className="h-8 flex items-center justify-end text-sm font-bold text-white px-2">
+                            {formatCurrency(
+                              ((settings.currency === 'LKR' ? li.unitPriceLkr : li.unitPriceUsd) * (1 - li.discountPct / 100)) * li.quantity,
+                              settings.currency
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -532,7 +523,7 @@ export default function NewQuotationPage() {
                 value={newCustomerName}
                 onChange={(e) => setNewCustomerName(e.target.value)}
                 placeholder="John Doe"
-                className="bg-black/40 border-zinc-800 text-white"
+                className="bg-black/40 border-zinc-800 text-white h-10"
               />
             </div>
             <div className="space-y-2">
@@ -542,15 +533,15 @@ export default function NewQuotationPage() {
                 value={newCustomerPhone}
                 onChange={(e) => setNewCustomerPhone(e.target.value)}
                 placeholder="+1 234 567 890"
-                className="bg-black/40 border-zinc-800 text-white"
+                className="bg-black/40 border-zinc-800 text-white h-10"
               />
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsNewCustomerOpen(false)} className="border-zinc-800 text-white hover:bg-zinc-800">
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setIsNewCustomerOpen(false)} className="flex-1 sm:flex-none border-zinc-800 text-white hover:bg-zinc-800">
               Cancel
             </Button>
-            <Button onClick={handleCreateCustomer} disabled={loading} className="bg-blue-500 text-white hover:bg-blue-600">
+            <Button onClick={handleCreateCustomer} disabled={loading} className="flex-1 sm:flex-none bg-blue-500 text-white hover:bg-blue-600">
               {loading ? "Creating..." : "Create Customer"}
             </Button>
           </DialogFooter>
@@ -559,4 +550,3 @@ export default function NewQuotationPage() {
     </div>
   );
 }
-

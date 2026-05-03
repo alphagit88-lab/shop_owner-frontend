@@ -41,7 +41,6 @@ export default function ItemsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
 
-  // Gap 1: Pricing modal state
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
   const [pricingItemId, setPricingItemId] = useState<number | null>(null);
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -127,7 +126,6 @@ export default function ItemsPage() {
     }
   };
 
-  // Gap 1: Open pricing modal with customer selection
   const handleOpenPricingModal = async (itemId: number) => {
     setPricingItemId(itemId);
     setSelectedCustomer(null);
@@ -160,13 +158,13 @@ export default function ItemsPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Items Catalog</h2>
-          <p className="text-zinc-500">Manage your jewelry items, stock, and pricing.</p>
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white">Items Catalog</h2>
+          <p className="text-zinc-500 text-sm md:text-base">Manage your jewelry items, stock, and pricing.</p>
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger render={
-            <Button onClick={() => handleOpenDialog()} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+            <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold">
               <Plus className="w-4 h-4 mr-2" /> Add Item
             </Button>
           } />
@@ -192,7 +190,7 @@ export default function ItemsPage() {
                   required
                   value={formData.itemDescription}
                   onChange={(e) => setFormData({ ...formData, itemDescription: e.target.value })}
-                  placeholder="e.g. 1.0ct Round Brilliant Diamond"
+                  placeholder="e.g. 1.0ct Round Brilliant"
                   className="bg-white/5 border-zinc-800 focus:ring-blue-500/50"
                 />
               </div>
@@ -233,7 +231,7 @@ export default function ItemsPage() {
                   </div>
                 )}
               </div>
-              <div className="pt-4 flex justify-end gap-2">
+              <div className="pt-4 flex flex-col-reverse sm:flex-row justify-end gap-2">
                 <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)} className="hover:bg-white/10 hover:text-white">
                   Cancel
                 </Button>
@@ -246,24 +244,23 @@ export default function ItemsPage() {
         </Dialog>
       </div>
 
-      {/* Gap 1: Pricing / Customer Selection Modal */}
       <Dialog open={isPricingModalOpen} onOpenChange={setIsPricingModalOpen}>
-        <DialogContent className="bg-zinc-950 border border-zinc-800 text-white sm:max-w-[520px]">
+        <DialogContent className="bg-zinc-950 border border-zinc-800 text-white sm:max-w-[520px] w-[95vw] p-4 md:p-6">
           <DialogHeader>
-            <DialogTitle>Select Customer for Pricing</DialogTitle>
+            <DialogTitle>Select Customer</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
               <Input
-                placeholder="Search customers by name, email, or phone..."
+                placeholder="Search customers..."
                 value={customerSearch}
                 onChange={(e) => setCustomerSearch(e.target.value)}
                 className="pl-9 bg-white/5 border-zinc-800 text-white"
               />
             </div>
 
-            <div className="max-h-[300px] overflow-y-auto space-y-2 pr-1">
+            <div className="max-h-[250px] md:max-h-[300px] overflow-y-auto space-y-2 pr-1 custom-scrollbar">
               {filteredCustomers.length === 0 ? (
                 <p className="text-center text-zinc-500 py-6 text-sm">No customers found.</p>
               ) : (
@@ -277,29 +274,20 @@ export default function ItemsPage() {
                         : "border-zinc-800 bg-black/20 hover:bg-white/5 hover:border-zinc-700"
                     }`}
                   >
-                    <div className="flex items-start justify-between">
-                      <div>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <User className="w-4 h-4 text-zinc-500" />
-                          <span className="font-medium text-white">{customer.customerName}</span>
+                          <User className="w-4 h-4 text-zinc-500 shrink-0" />
+                          <span className="font-medium text-white truncate">{customer.customerName}</span>
                         </div>
-                        <div className="mt-1.5 space-y-0.5 pl-6">
+                        <div className="mt-1 pl-6">
                           {customer.email && (
-                            <div className="flex items-center text-xs text-zinc-400">
-                              <Mail className="w-3 h-3 mr-1.5 text-zinc-600" />
-                              {customer.email}
-                            </div>
-                          )}
-                          {customer.phoneNumber && (
-                            <div className="flex items-center text-xs text-zinc-400">
-                              <Phone className="w-3 h-3 mr-1.5 text-zinc-600" />
-                              {customer.phoneNumber}
-                            </div>
+                            <div className="text-[10px] text-zinc-400 truncate">{customer.email}</div>
                           )}
                         </div>
                       </div>
-                      <span className="text-[10px] font-mono text-zinc-600 bg-zinc-900 px-2 py-0.5 rounded">
-                        ID: {customer.id}
+                      <span className="shrink-0 text-[10px] font-mono text-zinc-600 bg-zinc-900 px-2 py-0.5 rounded">
+                        #{customer.id}
                       </span>
                     </div>
                   </button>
@@ -307,7 +295,7 @@ export default function ItemsPage() {
               )}
             </div>
 
-            <div className="pt-2 flex justify-end gap-2 border-t border-zinc-800">
+            <div className="pt-2 flex flex-col-reverse sm:flex-row justify-end gap-2 border-t border-zinc-800">
               <Button variant="ghost" onClick={() => setIsPricingModalOpen(false)} className="hover:bg-white/10 hover:text-white">
                 Cancel
               </Button>
@@ -316,8 +304,7 @@ export default function ItemsPage() {
                 disabled={!selectedCustomer}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:opacity-40"
               >
-                <DollarSign className="w-4 h-4 mr-2" />
-                Proceed to Quotation
+                Next Step
               </Button>
             </div>
           </div>
@@ -325,89 +312,94 @@ export default function ItemsPage() {
       </Dialog>
 
       <Card className="bg-white/5 border-zinc-800/50 backdrop-blur-sm">
-        <CardHeader className="pb-3">
-          <div className="relative max-w-sm">
+        <CardHeader className="pb-3 px-4 md:px-6">
+          <div className="relative w-full max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <Input
-              placeholder="Search by code or description..."
+              placeholder="Search items..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9 bg-black/40 border-zinc-800 text-white focus:ring-blue-500/50"
             />
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="rounded-md border border-zinc-800/50 overflow-hidden">
-            <Table>
-              <TableHeader className="bg-zinc-900/50">
-                <TableRow className="border-zinc-800/50 hover:bg-transparent">
-                  <TableHead className="text-zinc-400">Code</TableHead>
-                  <TableHead className="text-zinc-400">Description</TableHead>
-                  <TableHead className="text-zinc-400 text-right">Price</TableHead>
-                  <TableHead className="text-zinc-400 text-center">Status</TableHead>
-                  <TableHead className="text-zinc-400 text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow className="border-zinc-800/50">
-                    <TableCell colSpan={6} className="text-center py-8 text-zinc-500">Loading items...</TableCell>
-                  </TableRow>
-                ) : items.length === 0 ? (
-                  <TableRow className="border-zinc-800/50">
-                    <TableCell colSpan={6} className="text-center py-8 text-zinc-500">No items found</TableCell>
-                  </TableRow>
-                ) : (
-                  items.map((item) => (
-                    <TableRow key={item.id} className="border-zinc-800/50 hover:bg-white/5 transition-colors">
-                      <TableCell className="font-medium text-white">{item.itemCode || "-"}</TableCell>
-                      <TableCell className="text-zinc-300 max-w-[300px] truncate">{item.itemDescription}</TableCell>
-                      <TableCell className="text-right text-emerald-400 font-medium">
-                        {formatCurrency(settings.currency === 'LKR' ? item.unitPriceLkr : item.unitPriceUsd, settings.currency)}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="outline" className={item.isAvailable ? "border-emerald-500/30 text-emerald-500 bg-emerald-500/10" : "border-red-500/30 text-red-500 bg-red-500/10"}>
-                          {item.isAvailable ? "In Stock" : "Sold"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8 text-zinc-400 hover:text-blue-400 hover:bg-blue-400/10"
-                            onClick={() => handleOpenPricingModal(item.id)}
-                            title="Create Quotation"
-                          >
-                            <Banknote className="w-4 h-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8 text-zinc-400 hover:text-blue-400 hover:bg-blue-400/10"
-                            onClick={() => handleOpenDialog(item)}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-400/10"
-                            onClick={() => handleDeleteItem(item.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+        <CardContent className="px-0 md:px-6">
+          <div className="overflow-x-auto">
+            <div className="inline-block min-w-full align-middle px-4 md:px-0">
+              <div className="rounded-xl border border-zinc-800/50 overflow-hidden">
+                <Table>
+                  <TableHeader className="bg-zinc-900/50">
+                    <TableRow className="border-zinc-800/50 hover:bg-transparent">
+                      <TableHead className="text-zinc-400">Item</TableHead>
+                      <TableHead className="text-zinc-400 text-right">Price</TableHead>
+                      <TableHead className="text-zinc-400 text-center">Status</TableHead>
+                      <TableHead className="text-zinc-400 text-right">Actions</TableHead>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {loading ? (
+                      <TableRow className="border-zinc-800/50">
+                        <TableCell colSpan={4} className="text-center py-8 text-zinc-500">Loading...</TableCell>
+                      </TableRow>
+                    ) : items.length === 0 ? (
+                      <TableRow className="border-zinc-800/50">
+                        <TableCell colSpan={4} className="text-center py-8 text-zinc-500">No items found</TableCell>
+                      </TableRow>
+                    ) : (
+                      items.map((item) => (
+                        <TableRow key={item.id} className="border-zinc-800/50 hover:bg-white/5 transition-colors">
+                          <TableCell>
+                            <div className="flex flex-col">
+                              <span className="font-medium text-white text-sm">{item.itemCode || "NO CODE"}</span>
+                              <span className="text-[11px] text-zinc-500 truncate max-w-[120px] md:max-w-[250px]">{item.itemDescription}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right text-emerald-400 font-semibold text-sm whitespace-nowrap">
+                            {formatCurrency(settings.currency === 'LKR' ? item.unitPriceLkr : item.unitPriceUsd, settings.currency)}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Badge variant="outline" className={`text-[10px] h-5 px-1.5 ${item.isAvailable ? "border-emerald-500/30 text-emerald-500 bg-emerald-500/10" : "border-red-500/30 text-red-500 bg-red-500/10"}`}>
+                              {item.isAvailable ? "Stock" : "Sold"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-1 md:gap-2">
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-7 w-7 text-zinc-400 hover:text-blue-400"
+                                onClick={() => handleOpenPricingModal(item.id)}
+                              >
+                                <Banknote className="w-3.5 h-3.5" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-7 w-7 text-zinc-400 hover:text-white"
+                                onClick={() => handleOpenDialog(item)}
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-7 w-7 text-zinc-400 hover:text-red-400"
+                                onClick={() => handleDeleteItem(item.id)}
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
     </div>
   );
 }
-

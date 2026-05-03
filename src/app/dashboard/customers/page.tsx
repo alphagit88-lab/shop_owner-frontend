@@ -72,12 +72,12 @@ export default function CustomersPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-white">Customers</h2>
-          <p className="text-zinc-500">Manage your client database and contact details.</p>
+          <p className="text-zinc-500 text-sm md:text-base">Manage your client database and contact details.</p>
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger render={
-            <Button onClick={handleOpenDialog} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+            <Button onClick={handleOpenDialog} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold">
               <Plus className="w-4 h-4 mr-2" /> Add Customer
             </Button>
           } />
@@ -133,10 +133,10 @@ export default function CustomersPage() {
 
       <Card className="bg-white/5 border-zinc-800/50 backdrop-blur-sm">
         <CardHeader className="pb-3">
-          <div className="relative max-w-sm">
+          <div className="relative w-full max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <Input
-              placeholder="Search by name, email or phone..."
+              placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9 bg-black/40 border-zinc-800 text-white focus:ring-blue-500/50"
@@ -144,62 +144,59 @@ export default function CustomersPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border border-zinc-800/50 overflow-hidden">
-            <Table>
-              <TableHeader className="bg-zinc-900/50">
-                <TableRow className="border-zinc-800/50 hover:bg-transparent">
-                  <TableHead className="text-zinc-400">Name</TableHead>
-                  <TableHead className="text-zinc-400">Contact Information</TableHead>
-                  <TableHead className="text-zinc-400">Added On</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow className="border-zinc-800/50">
-                    <TableCell colSpan={3} className="text-center py-8 text-zinc-500">Loading customers...</TableCell>
-                  </TableRow>
-                ) : customers.length === 0 ? (
-                  <TableRow className="border-zinc-800/50">
-                    <TableCell colSpan={3} className="text-center py-8 text-zinc-500">No customers found</TableCell>
-                  </TableRow>
-                ) : (
-                  customers.map((customer) => (
-                    <TableRow key={customer.id} className="border-zinc-800/50 hover:bg-white/5 transition-colors">
-                      <TableCell className="font-medium text-white text-base">{customer.customerName}</TableCell>
-                      <TableCell>
-                        <div className="space-y-1">
-                          {customer.email && (
-                            <div className="flex items-center text-zinc-400 text-sm">
-                              <Mail className="w-3.5 h-3.5 mr-2 text-zinc-500" />
-                              {customer.email}
-                            </div>
-                          )}
-                          {customer.phoneNumber && (
-                            <div className="flex items-center text-zinc-400 text-sm">
-                              <Phone className="w-3.5 h-3.5 mr-2 text-zinc-500" />
-                              {customer.phoneNumber}
-                            </div>
-                          )}
-                          {!customer.email && !customer.phoneNumber && (
-                            <span className="text-zinc-600 italic text-sm">No contact info</span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-zinc-400">
-                        <div className="flex items-center">
-                          <Calendar className="w-3.5 h-3.5 mr-2 text-zinc-500" />
-                          {new Date(customer.createdAt).toLocaleDateString()}
-                        </div>
-                      </TableCell>
+          <div className="overflow-x-auto -mx-4 md:mx-0">
+            <div className="inline-block min-w-full align-middle md:px-0 px-4">
+              <div className="rounded-xl border border-zinc-800/50 overflow-hidden">
+                <Table>
+                  <TableHeader className="bg-zinc-900/50">
+                    <TableRow className="border-zinc-800/50 hover:bg-transparent">
+                      <TableHead className="text-zinc-400">Name</TableHead>
+                      <TableHead className="text-zinc-400">Contact</TableHead>
+                      <TableHead className="text-zinc-400">Added</TableHead>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {loading ? (
+                      <TableRow className="border-zinc-800/50">
+                        <TableCell colSpan={3} className="text-center py-8 text-zinc-500">Loading...</TableCell>
+                      </TableRow>
+                    ) : customers.length === 0 ? (
+                      <TableRow className="border-zinc-800/50">
+                        <TableCell colSpan={3} className="text-center py-8 text-zinc-500">No customers found</TableCell>
+                      </TableRow>
+                    ) : (
+                      customers.map((customer) => (
+                        <TableRow key={customer.id} className="border-zinc-800/50 hover:bg-white/5 transition-colors">
+                          <TableCell className="font-medium text-white">{customer.customerName}</TableCell>
+                          <TableCell>
+                            <div className="space-y-1">
+                              {customer.email && (
+                                <div className="flex items-center text-zinc-400 text-xs">
+                                  <Mail className="w-3 h-3 mr-2 text-zinc-500" />
+                                  <span className="truncate max-w-[150px]">{customer.email}</span>
+                                </div>
+                              )}
+                              {customer.phoneNumber && (
+                                <div className="flex items-center text-zinc-400 text-xs">
+                                  <Phone className="w-3 h-3 mr-2 text-zinc-500" />
+                                  {customer.phoneNumber}
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-zinc-400 text-xs whitespace-nowrap">
+                            {new Date(customer.createdAt).toLocaleDateString()}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
     </div>
   );
 }
-

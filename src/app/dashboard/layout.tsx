@@ -34,12 +34,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const pathname = usePathname();
   const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile screen
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) setSidebarOpen(false);
+      else setSidebarOpen(true);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
     }
   }, [user, loading, router]);
+
+  // Close sidebar on mobile when navigating
+  useEffect(() => {
+    if (isMobile) setSidebarOpen(false);
+  }, [pathname, isMobile]);
 
   if (loading) return (
     <div className="min-h-screen bg-black flex items-center justify-center">
@@ -53,22 +72,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[#050505] text-zinc-100 flex">
+    <div className="min-h-screen w-full bg-[#050505] text-zinc-100 flex overflow-x-hidden">
+      {/* Mobile Sidebar Overlay */}
+      {isMobile && isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] animate-in fade-in duration-300"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <aside className={`
-        ${isSidebarOpen ? "w-64" : "w-20"} 
+        ${isSidebarOpen ? "translate-x-0 w-64" : "-translate-x-full md:translate-x-0 md:w-20"} 
         transition-all duration-300 ease-in-out
-        border-r border-zinc-800/50 bg-[#0a0a0a] flex flex-col fixed h-full z-50
+        border-r border-zinc-800/50 bg-[#0a0a0a] flex flex-col fixed h-full z-[70]
         print:hidden
       `}>
         <div className="p-6 flex items-center gap-3">
-          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-white/10 border border-white/20 shadow-lg shadow-blue-500/20 overflow-hidden shrink-0">
+          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 border border-white/20 shadow-lg shadow-blue-500/20 overflow-hidden shrink-0">
             <img src="/logo.png" alt="TitanCore Logo" className="w-full h-full object-contain p-1" />
           </div>
-          {isSidebarOpen && <span className="font-bold text-xl tracking-tight text-white">TitanCore Technologies</span>}
+          {(isSidebarOpen || isMobile) && <span className="font-bold text-lg tracking-tight text-white truncate">TitanCore</span>}
         </div>
 
-        <nav className="flex-1 px-4 space-y-2 mt-4">
+        <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
@@ -82,8 +109,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     : "text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent"}
                 `}
               >
-                <item.icon className="w-5 h-5" />
-                {isSidebarOpen && <span className="font-medium text-sm">{item.name}</span>}
+                <item.icon className="w-5 h-5 shrink-0" />
+                {(isSidebarOpen || isMobile) && <span className="font-medium text-sm">{item.name}</span>}
               </Link>
             );
           })}
@@ -94,34 +121,37 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             onClick={logout}
             className="flex items-center gap-3 px-3 py-3 rounded-xl w-full text-zinc-400 hover:text-red-400 hover:bg-red-400/5 transition-all duration-200"
           >
-            <LogOut className="w-5 h-5" />
-            {isSidebarOpen && <span className="font-medium text-sm">Sign Out</span>}
+            <LogOut className="w-5 h-5 shrink-0" />
+            {(isSidebarOpen || isMobile) && <span className="font-medium text-sm">Sign Out</span>}
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300 print:ml-0`}>
+      <main className={`
+        flex-1 transition-all duration-300 print:ml-0
+        ${isSidebarOpen && !isMobile ? "ml-64" : "ml-0 md:ml-20"}
+      `}>
         {/* Top Header */}
-        <header className="h-16 border-b border-zinc-800/50 bg-[#0a0a0a]/50 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-40 print:hidden">
-          <div className="flex items-center gap-4">
+        <header className="h-16 border-b border-zinc-800/50 bg-[#0a0a0a]/50 backdrop-blur-md flex items-center justify-between px-4 md:px-8 sticky top-0 z-40 print:hidden">
+          <div className="flex items-center gap-2 md:gap-4">
             <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!isSidebarOpen)} className="text-zinc-400 hover:text-white hover:bg-white/5">
               {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
-            <h1 className="text-sm font-semibold text-zinc-300">
+            <h1 className="text-sm font-semibold text-zinc-300 truncate max-w-[120px] md:max-w-none">
               {navItems.find(i => pathname.startsWith(i.href))?.name || "Dashboard"}
             </h1>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right">
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="text-right hidden sm:block">
               <p className="text-xs font-medium text-white">{user.username}</p>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Administrator</p>
+              <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Admin</p>
             </div>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 border border-zinc-700" />
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 border border-zinc-700 shrink-0" />
           </div>
         </header>
 
-        <div className="p-8">
+        <div className="p-4 md:p-8">
           {children}
         </div>
       </main>
