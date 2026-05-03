@@ -119,11 +119,13 @@ export default function QuotationDetailPage() {
             </Button>
           )}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="border-zinc-700 bg-black/40 text-white h-9 w-9">
-                <MoreVertical className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
+            <DropdownMenuTrigger 
+              render={
+                <Button variant="outline" size="icon" className="border-zinc-700 bg-black/40 text-white h-9 w-9">
+                  <MoreVertical className="w-4 h-4" />
+                </Button>
+              } 
+            />
             <DropdownMenuContent align="end" className="bg-zinc-950 border-zinc-800 text-white">
               {quotation.status !== "CONVERTED" && (
                 <DropdownMenuItem onClick={() => router.push(`/dashboard/quotations/new?edit=${quotation.quotationNo}`)}>
