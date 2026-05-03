@@ -65,6 +65,7 @@ export default function NewQuotationPage() {
   const [newCustomerName, setNewCustomerName] = useState("");
   const [newCustomerPhone, setNewCustomerPhone] = useState("");
   const [newCustomerEmail, setNewCustomerEmail] = useState("");
+  const [isConfirmAddOpen, setIsConfirmAddOpen] = useState(false);
   const [notes, setNotes] = useState("");
   const [quotationStatus, setQuotationStatus] = useState<string | null>(null);
   const [lineItems, setLineItems] = useState<LineItem[]>([]);
@@ -159,7 +160,16 @@ export default function NewQuotationPage() {
       toast.error("Customer name is required");
       return;
     }
-    
+    setIsConfirmAddOpen(true);
+  };
+
+  const processCreateCustomer = async (saveToDb: boolean) => {
+    if (!saveToDb) {
+      setIsConfirmAddOpen(false);
+      setIsNewCustomerOpen(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await api.post("/customers", {
@@ -179,6 +189,7 @@ export default function NewQuotationPage() {
       toast.error("Failed to create customer");
     } finally {
       setLoading(false);
+      setIsConfirmAddOpen(false);
     }
   };
 
@@ -605,6 +616,31 @@ export default function NewQuotationPage() {
               {loading ? "Creating..." : "Create Customer"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isConfirmAddOpen} onOpenChange={setIsConfirmAddOpen}>
+        <DialogContent className="bg-zinc-950 border-zinc-800 text-white sm:max-w-[360px] p-6">
+          <DialogHeader className="space-y-3">
+            <DialogTitle className="text-center text-xl font-bold text-white">Confirmation</DialogTitle>
+            <p className="text-center text-zinc-400 text-sm">
+              Will this customer be added to the system?
+            </p>
+          </DialogHeader>
+          <div className="flex gap-3 mt-6">
+            <Button 
+              variant="outline" 
+              onClick={() => processCreateCustomer(false)} 
+              className="flex-1 border-zinc-800 text-white hover:bg-zinc-800 h-11 font-semibold"
+            >
+              No
+            </Button>
+            <Button 
+              onClick={() => processCreateCustomer(true)} 
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-11 font-bold shadow-lg shadow-blue-500/20"
+            >
+              Yes
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
