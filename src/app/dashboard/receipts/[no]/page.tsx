@@ -106,8 +106,8 @@ export default function ReceiptDetailPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-0.5">Customer ID</p>
-                <p className="text-zinc-400 font-mono">#{receipt.customerId || "-"}</p>
+                <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-0.5">Email</p>
+                <p className="text-zinc-400 truncate">{receipt.customer?.email || "-"}</p>
               </div>
               <div>
                 <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-0.5">Phone</p>

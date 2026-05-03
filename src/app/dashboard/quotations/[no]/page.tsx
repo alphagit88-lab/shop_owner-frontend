@@ -155,8 +155,8 @@ export default function QuotationDetailPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-0.5">Customer ID</p>
-                <p className="text-zinc-400 font-mono">#{quotation.customerId}</p>
+                <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-0.5">Email</p>
+                <p className="text-zinc-400 truncate">{quotation.customer?.email || "-"}</p>
               </div>
               <div>
                 <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-0.5">Phone</p>
