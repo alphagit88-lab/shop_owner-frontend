@@ -76,13 +76,14 @@ export default function ItemsPage() {
   }, [search]);
 
   const handleOpenDialog = (item?: Item) => {
+    console.log("Opening dialog for item:", item);
     if (item) {
       setEditingItem(item);
       setFormData({
         itemCode: item.itemCode || "",
-        itemDescription: item.itemDescription,
-        unitPriceUsd: item.unitPriceUsd.toString(),
-        unitPriceLkr: item.unitPriceLkr.toString(),
+        itemDescription: item.itemDescription || "",
+        unitPriceUsd: String(item.unitPriceUsd ?? 0),
+        unitPriceLkr: String(item.unitPriceLkr ?? 0),
       });
     } else {
       setEditingItem(null);

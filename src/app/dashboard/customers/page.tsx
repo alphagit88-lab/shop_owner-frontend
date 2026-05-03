@@ -73,8 +73,9 @@ export default function CustomersPage() {
       await api.delete(`/customers/${id}`);
       toast.success("Customer deleted successfully");
       fetchCustomers();
-    } catch (error) {
-      toast.error("Failed to delete customer");
+    } catch (error: any) {
+      const message = error.response?.data?.message || "Failed to delete customer";
+      toast.error(message);
     }
   };
 
