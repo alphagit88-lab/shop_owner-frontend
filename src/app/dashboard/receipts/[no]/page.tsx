@@ -125,7 +125,7 @@ export default function ReceiptDetailPage() {
               <div className="space-y-1">
                 <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Total Paid</p>
                 <p className="text-2xl font-bold text-emerald-400">
-                  {formatCurrency(settings.currency === 'LKR' ? receipt.totalPaidLkr : receipt.totalPaidUsd, settings.currency)}
+                  {formatCurrency(receipt.totalPaidLkr, 'LKR')}
                 </p>
               </div>
               <div className="text-right">

@@ -121,8 +121,9 @@ export default function ItemsPage() {
       await api.delete(`/items/${id}`);
       toast.success("Item deleted successfully");
       fetchItems();
-    } catch (error) {
-      toast.error("Failed to delete item");
+    } catch (error: any) {
+      const message = error.response?.data?.message || "Failed to delete item";
+      toast.error(message);
     }
   };
 
@@ -380,7 +381,7 @@ export default function ItemsPage() {
                               >
                                 <Edit className="w-3.5 h-3.5" />
                               </Button>
-                              <Button 
+                               <Button 
                                 variant="ghost" 
                                 size="icon" 
                                 className="h-7 w-7 text-zinc-400 hover:text-red-400"

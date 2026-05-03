@@ -138,7 +138,7 @@ export default function QuotationsPage() {
                             {quote.customerName}
                           </TableCell>
                           <TableCell className="text-right text-emerald-400 font-bold text-sm whitespace-nowrap">
-                            {formatCurrency(settings.currency === 'LKR' ? quote.totalLkr : quote.totalUsd, settings.currency)}
+                            {formatCurrency(quote.totalLkr, 'LKR')}
                           </TableCell>
                           <TableCell className="text-center">
                             <Badge variant="outline" className={`text-[10px] h-5 px-1 ${

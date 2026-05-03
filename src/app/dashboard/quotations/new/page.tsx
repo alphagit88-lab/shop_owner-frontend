@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, Plus, Trash2, ArrowLeft, Gem, Check, ChevronsUpDown, ShoppingBag } from "lucide-react";
+import { Save, Plus, Trash2, ArrowLeft, Gem, Check, ChevronsUpDown, ShoppingBag, UserPlus, Mail, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { useSettings } from "@/lib/settings-context";
 import { formatCurrency } from "@/lib/format";
@@ -31,6 +31,7 @@ interface Customer {
   id: number;
   customerName: string;
   phoneNumber?: string;
+  email?: string;
 }
 
 interface LineItem {
@@ -63,6 +64,7 @@ export default function NewQuotationPage() {
   const [isNewCustomerOpen, setIsNewCustomerOpen] = useState(false);
   const [newCustomerName, setNewCustomerName] = useState("");
   const [newCustomerPhone, setNewCustomerPhone] = useState("");
+  const [newCustomerEmail, setNewCustomerEmail] = useState("");
   const [notes, setNotes] = useState("");
   const [quotationStatus, setQuotationStatus] = useState<string | null>(null);
   const [lineItems, setLineItems] = useState<LineItem[]>([]);
@@ -163,6 +165,7 @@ export default function NewQuotationPage() {
       const res = await api.post("/customers", {
         customerName: newCustomerName,
         phoneNumber: newCustomerPhone,
+        email: newCustomerEmail,
       });
       const createdCustomer = res.data;
       setCustomers(prev => [...prev, createdCustomer]);
@@ -170,6 +173,7 @@ export default function NewQuotationPage() {
       setIsNewCustomerOpen(false);
       setNewCustomerName("");
       setNewCustomerPhone("");
+      setNewCustomerEmail("");
       toast.success("Customer created successfully");
     } catch (error) {
       toast.error("Failed to create customer");
@@ -287,8 +291,18 @@ export default function NewQuotationPage() {
               <CardTitle className="text-sm font-semibold text-zinc-400 uppercase tracking-widest">Configuration</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="customer" className="text-xs text-zinc-300">Customer *</Label>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="customer" className="text-xs text-zinc-300">Customer *</Label>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setIsNewCustomerOpen(true)}
+                    className="h-7 px-2 text-[10px] bg-blue-500/5 border-blue-500/20 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 gap-1.5"
+                  >
+                    <Plus className="w-3 h-3" /> Quick Add
+                  </Button>
+                </div>
                 <Popover open={customerOpen} onOpenChange={setCustomerOpen}>
                   <PopoverTrigger render={
                     <Button
@@ -309,6 +323,19 @@ export default function NewQuotationPage() {
                     <Command className="bg-zinc-950 text-white">
                       <CommandInput placeholder="Search name or phone..." className="text-white h-10" />
                       <CommandList>
+                        <div className="p-1 border-b border-zinc-800/50">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            className="w-full justify-start text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 h-10 px-3 text-xs font-semibold gap-2"
+                            onClick={() => {
+                              setCustomerOpen(false);
+                              setIsNewCustomerOpen(true);
+                            }}
+                          >
+                            <Plus className="w-4 h-4" /> Add New Customer
+                          </Button>
+                        </div>
                         <CommandEmpty>
                           <div className="flex flex-col items-center justify-center p-4">
                             <p className="text-zinc-500 text-sm mb-3">No customer found.</p>
@@ -354,6 +381,28 @@ export default function NewQuotationPage() {
                     </Command>
                   </PopoverContent>
                 </Popover>
+
+                {/* Selected Customer Details */}
+                {selectedCustomerId && customers.find(c => c.id.toString() === selectedCustomerId) && (
+                  <div className="p-3 rounded-xl border border-zinc-800/50 bg-black/20 space-y-2 animate-in slide-in-from-top-2 duration-300">
+                    <div className="flex items-center gap-2 text-white">
+                      <div className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                        <Check className="w-3 h-3 text-blue-500" />
+                      </div>
+                      <span className="text-sm font-semibold">{customers.find(c => c.id.toString() === selectedCustomerId)?.customerName}</span>
+                    </div>
+                    <div className="grid grid-cols-1 gap-2 pl-8">
+                      <div className="flex items-center gap-2 text-[11px] text-zinc-400">
+                        <Phone className="w-3 h-3 text-zinc-500" />
+                        <span>{customers.find(c => c.id.toString() === selectedCustomerId)?.phoneNumber || "No phone added"}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[11px] text-zinc-400">
+                        <Mail className="w-3 h-3 text-zinc-500" />
+                        <span className="truncate">{customers.find(c => c.id.toString() === selectedCustomerId)?.email || "No email added"}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -382,7 +431,7 @@ export default function NewQuotationPage() {
                 <div className="space-y-1">
                   <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Grand Total ({settings.currency})</p>
                   <p className="text-3xl font-bold text-white tracking-tight">
-                    {formatCurrency(settings.currency === 'LKR' ? totals.lkr : totals.usd, settings.currency)}
+                    {formatCurrency(totals.lkr, 'LKR')}
                   </p>
                 </div>
               </div>
@@ -477,8 +526,8 @@ export default function NewQuotationPage() {
                           <Label className="text-[10px] text-zinc-500 uppercase font-bold">Price ({settings.currency})</Label>
                           <Input 
                             type="number"
-                            value={settings.currency === 'LKR' ? li.unitPriceLkr : li.unitPriceUsd} 
-                            onChange={(e) => updateLineItem(li.id, settings.currency === 'LKR' ? 'unitPriceLkr' : 'unitPriceUsd', e.target.value)}
+                            value={li.unitPriceLkr} 
+                            onChange={(e) => updateLineItem(li.id, 'unitPriceLkr', e.target.value)}
                             className="bg-zinc-900/50 border-zinc-800 h-8 text-sm text-emerald-400 font-medium"
                           />
                         </div>
@@ -533,6 +582,17 @@ export default function NewQuotationPage() {
                 value={newCustomerPhone}
                 onChange={(e) => setNewCustomerPhone(e.target.value)}
                 placeholder="+1 234 567 890"
+                className="bg-black/40 border-zinc-800 text-white h-10"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <Input
+                id="email"
+                type="email"
+                value={newCustomerEmail}
+                onChange={(e) => setNewCustomerEmail(e.target.value)}
+                placeholder="customer@example.com"
                 className="bg-black/40 border-zinc-800 text-white h-10"
               />
             </div>

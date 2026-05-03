@@ -172,7 +172,7 @@ export default function QuotationDetailPage() {
               <div className="space-y-1">
                 <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Grand Total</p>
                 <p className="text-2xl font-bold text-emerald-400">
-                  {formatCurrency(settings.currency === 'LKR' ? quotation.totalLkr : quotation.totalUsd, settings.currency)}
+                  {formatCurrency(quotation.totalLkr, 'LKR')}
                 </p>
               </div>
               <div className="text-right">
