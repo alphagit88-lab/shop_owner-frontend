@@ -6,7 +6,7 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Mail, Printer, MoreVertical, Receipt as ReceiptIcon } from "lucide-react";
+import { ArrowLeft, Mail, Printer, MoreVertical, Receipt as ReceiptIcon, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useSettings } from "@/lib/settings-context";
 import { formatCurrency } from "@/lib/format";
@@ -54,6 +54,51 @@ export default function ReceiptDetailPage() {
     }
   };
 
+  const handleWhatsAppShare = async () => {
+    const phone = receipt.customer?.phoneNumber;
+    const formattedNo = `R-${receipt.receiptNo.toString().padStart(5, '0')}`;
+    const amount = formatCurrency(receipt.totalPaidLkr, 'LKR');
+    const message = `Hello ${receipt.customerName}, thank you for your purchase at TitanCore. Your receipt ${formattedNo} for ${amount} has been generated.`;
+
+    try {
+      // 1. Fetch the PDF blob
+      const res = await api.get(`/receipts/${receipt.receiptNo}/pdf`, { responseType: 'blob' });
+      const blob = new Blob([res.data], { type: 'application/pdf' });
+      const file = new File([blob], `Receipt_${formattedNo}.pdf`, { type: 'application/pdf' });
+
+      // 2. Check if Web Share API is available and can share files
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: `Receipt ${formattedNo}`,
+          text: message,
+        });
+      } else {
+        // 3. Fallback for Desktop: Open WhatsApp Web and trigger Download
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = phone 
+          ? `https://wa.me/${phone.replace(/\+/g, '')}?text=${encodedMessage}`
+          : `https://wa.me/?text=${encodedMessage}`;
+        
+        window.open(whatsappUrl, '_blank');
+        
+        // Also trigger download so user can attach it
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `Receipt_${formattedNo}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        
+        toast.info("WhatsApp opened and PDF downloaded. Please attach the downloaded file manually if needed.");
+      }
+    } catch (error) {
+      console.error("Sharing failed", error);
+      toast.error("Failed to share receipt");
+    }
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500 max-w-5xl mx-auto px-4 md:px-0">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -81,6 +126,9 @@ export default function ReceiptDetailPage() {
           <Button variant="outline" onClick={handleEmailPdf} className="border-zinc-700 bg-black/40 text-white hover:bg-emerald-400/10 hover:text-emerald-400">
             <Mail className="w-4 h-4 mr-2" /> Email PDF
           </Button>
+          <Button variant="outline" onClick={handleWhatsAppShare} className="border-zinc-700 bg-black/40 text-white hover:bg-emerald-400/10 hover:text-emerald-400">
+            <MessageCircle className="w-4 h-4 mr-2" /> WhatsApp
+          </Button>
         </div>
 
         {/* Action Buttons - Mobile */}
@@ -90,6 +138,9 @@ export default function ReceiptDetailPage() {
           </Button>
           <Button variant="outline" onClick={handleEmailPdf} className="flex-1 border-zinc-700 bg-black/40 text-white text-xs h-9">
             <Mail className="w-3.5 h-3.5 mr-1.5" /> Email
+          </Button>
+          <Button variant="outline" onClick={handleWhatsAppShare} className="flex-1 border-zinc-700 bg-black/40 text-white text-xs h-9">
+            <MessageCircle className="w-3.5 h-3.5 mr-1.5" /> WhatsApp
           </Button>
         </div>
       </div>

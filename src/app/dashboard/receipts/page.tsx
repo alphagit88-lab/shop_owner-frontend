@@ -5,7 +5,7 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Receipt, Eye, Mail, Printer, ChevronRight } from "lucide-react";
+import { Receipt, Eye, Mail, Printer, ChevronRight, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/lib/settings-context";
@@ -18,6 +18,9 @@ interface ReceiptData {
   paymentMethod: string;
   totalPaidUsd: string;
   totalPaidLkr: string;
+  customer?: {
+    phoneNumber?: string;
+  };
 }
 
 export default function ReceiptsPage() {
@@ -65,6 +68,51 @@ export default function ReceiptsPage() {
       window.open(url, '_blank');
     } catch (error) {
       toast.error("Failed to open PDF for printing");
+    }
+  };
+
+  const handleWhatsAppShare = async (receipt: ReceiptData) => {
+    const phone = receipt.customer?.phoneNumber;
+    const formattedNo = `R-${receipt.receiptNo.toString().padStart(5, '0')}`;
+    const amount = formatCurrency(receipt.totalPaidLkr, 'LKR');
+    const message = `Hello ${receipt.customerName}, thank you for your purchase at TitanCore. Your receipt ${formattedNo} for ${amount} has been generated.`;
+
+    try {
+      // 1. Fetch the PDF blob
+      const res = await api.get(`/receipts/${receipt.receiptNo}/pdf`, { responseType: 'blob' });
+      const blob = new Blob([res.data], { type: 'application/pdf' });
+      const file = new File([blob], `Receipt_${formattedNo}.pdf`, { type: 'application/pdf' });
+
+      // 2. Check if Web Share API is available and can share files
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: `Receipt ${formattedNo}`,
+          text: message,
+        });
+      } else {
+        // 3. Fallback for Desktop: Open WhatsApp Web and trigger Download
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = phone 
+          ? `https://wa.me/${phone.replace(/\+/g, '')}?text=${encodedMessage}`
+          : `https://wa.me/?text=${encodedMessage}`;
+        
+        window.open(whatsappUrl, '_blank');
+        
+        // Also trigger download so user can attach it
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `Receipt_${formattedNo}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        
+        toast.info("WhatsApp opened and PDF downloaded. Please attach the downloaded file manually if needed.");
+      }
+    } catch (error) {
+      console.error("Sharing failed", error);
+      toast.error("Failed to share receipt");
     }
   };
 
@@ -148,6 +196,14 @@ export default function ReceiptsPage() {
                                 onClick={() => handlePrintPdf(receipt.receiptNo)}
                               >
                                 <Printer className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8 text-zinc-400 hover:text-emerald-500"
+                                onClick={() => handleWhatsAppShare(receipt)}
+                              >
+                                <MessageCircle className="w-4 h-4" />
                               </Button>
                             </div>
                           </TableCell>
