@@ -6,6 +6,7 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Mail, Printer, MoreVertical, Receipt as ReceiptIcon, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { useSettings } from "@/lib/settings-context";
@@ -172,16 +173,16 @@ export default function ReceiptDetailPage() {
             <CardTitle className="text-base text-zinc-400 uppercase tracking-wider font-semibold">Payment Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-zinc-300 print:text-gray-800">
-            <div className="flex justify-between items-end">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 sm:gap-0">
               <div className="space-y-1">
                 <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Total Paid</p>
                 <p className="text-2xl font-bold text-emerald-400">
                   {formatCurrency(receipt.totalPaidLkr, 'LKR')}
                 </p>
               </div>
-              <div className="text-right">
+              <div className="text-left sm:text-right shrink-0">
                 <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Method</p>
-                <p className="text-white font-medium">{receipt.paymentMethod || "Cash"}</p>
+                <p className="text-white font-medium text-sm">{receipt.paymentMethod || "Cash"}</p>
               </div>
             </div>
             {receipt.quotationNo && (
@@ -198,8 +199,9 @@ export default function ReceiptDetailPage() {
           <CardTitle className="text-base text-zinc-400 uppercase tracking-wider font-semibold">Purchased Items</CardTitle>
         </CardHeader>
         <CardContent className="px-0 md:px-6">
-          <div className="overflow-x-auto">
-            <div className="inline-block min-w-full align-middle px-4 md:px-0">
+          {/* Desktop View Table */}
+          <div className="hidden md:block overflow-x-auto">
+            <div className="inline-block min-w-full align-middle">
               <div className="rounded-xl border border-zinc-800/50 print:border-gray-300 overflow-hidden">
                 <Table>
                   <TableHeader className="bg-zinc-900/50 print:bg-gray-100">
@@ -213,12 +215,10 @@ export default function ReceiptDetailPage() {
                   <TableBody>
                     {receipt.details?.map((item: any) => (
                       <TableRow key={item.id} className="border-zinc-800/50 print:border-gray-200">
-                        <TableCell className="min-w-[120px]">
+                        <TableCell>
                           <div className="flex flex-col">
                             <span className="font-medium text-white text-sm">{item.itemCode || "-"}</span>
-                            <span className="text-[10px] text-zinc-500 line-clamp-2 md:line-clamp-none whitespace-normal max-w-[150px] md:max-w-[400px]">
-                              {item.itemDescription}
-                            </span>
+                            <span className="text-[10px] text-zinc-500">{item.itemDescription}</span>
                           </div>
                         </TableCell>
                         <TableCell className="text-right text-zinc-300 text-sm whitespace-nowrap">{item.quantity}</TableCell>
@@ -239,6 +239,44 @@ export default function ReceiptDetailPage() {
                 </Table>
               </div>
             </div>
+          </div>
+
+          {/* Mobile View Cards */}
+          <div className="md:hidden space-y-3 px-4">
+            {receipt.details?.map((item: any) => (
+              <div key={item.id} className="p-4 rounded-xl border border-zinc-800/50 bg-white/5 space-y-3">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-0.5">
+                    <p className="font-bold text-white text-sm">{item.itemCode || "NO CODE"}</p>
+                    <p className="text-[10px] text-zinc-500 line-clamp-2 leading-relaxed">{item.itemDescription}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Qty</p>
+                    <p className="text-white font-medium">{item.quantity}</p>
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-end pt-2 border-t border-white/5">
+                  <div className="space-y-0.5">
+                    <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Unit Price</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-zinc-300 text-xs">
+                        {formatCurrency(settings.currency === 'LKR' ? item.unitPriceLkr : item.unitPriceUsd, settings.currency)}
+                      </span>
+                      {Number(item.discountPct) > 0 && (
+                        <Badge className="bg-red-500/10 text-red-500 border-red-500/20 text-[8px] h-4 px-1">-{item.discountPct}%</Badge>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right space-y-0.5">
+                    <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Total</p>
+                    <p className="text-emerald-400 font-bold text-sm">
+                      {formatCurrency(settings.currency === 'LKR' ? item.lineTotalLkr : item.lineTotalUsd, settings.currency)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
