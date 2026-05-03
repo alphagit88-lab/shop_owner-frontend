@@ -121,7 +121,7 @@ export default function ReceiptsPage() {
                             </div>
                           </TableCell>
                           <TableCell className="text-right text-emerald-400 font-bold text-sm whitespace-nowrap">
-                            {formatCurrency(settings.currency === 'LKR' ? receipt.totalPaidLkr : receipt.totalPaidUsd, settings.currency)}
+                            {formatCurrency(receipt.totalPaidLkr, 'LKR')}
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-1 md:gap-2">
