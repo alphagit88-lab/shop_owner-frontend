@@ -78,7 +78,6 @@ export default function QuotationDetailPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">TITANCORE</h1>
-            <p className="text-xs text-zinc-500 font-medium uppercase tracking-widest">Luxury Jewellery & Gems</p>
           </div>
         </div>
         <div className="text-right">
