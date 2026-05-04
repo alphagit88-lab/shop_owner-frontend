@@ -102,7 +102,26 @@ export default function ReceiptDetailPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 max-w-5xl mx-auto px-4 md:px-0">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="hidden print:flex flex-row items-center justify-between border-b-2 border-zinc-100 pb-8 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-xl bg-zinc-900 print:bg-white print:border print:border-zinc-200 flex items-center justify-center p-2">
+            <img src="/logo.png" alt="TitanCore Logo" className="w-full h-full object-contain" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">TITANCORE</h1>
+            <p className="text-xs text-zinc-500 font-medium uppercase tracking-widest">Luxury Jewellery & Gems</p>
+          </div>
+        </div>
+        <div className="text-right">
+          <h2 className="text-3xl font-black text-zinc-900 uppercase tracking-tighter">RECEIPT</h2>
+          <div className="mt-1 space-y-0.5">
+            <p className="text-sm font-bold text-zinc-600">#{receipt.receiptNo.toString().padStart(5, '0')}</p>
+            <p className="text-[10px] text-zinc-400 font-medium">{new Date(receipt.receiptDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => router.push("/dashboard/receipts")} className="text-zinc-400 hover:text-white hover:bg-white/10 print:hidden shrink-0">
             <ArrowLeft className="w-5 h-5" />
